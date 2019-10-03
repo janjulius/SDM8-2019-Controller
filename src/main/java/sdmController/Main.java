@@ -15,10 +15,10 @@ import enums.LaneType;
 import logger.SdmLogger;
 import mqtt.SdmController;
 import mqtt.SdmMessage;
+import mqtt.SdmTopic;
 import mqtt.Settings;
 import util.Constants;
 import util.SdmHelper;
-import util.TopicHelper;
 
 /**
  * Main
@@ -58,14 +58,11 @@ public class Main {
 		options.setConnectionTimeout(Settings.CONNECTION_TIMEOUT);
 
 		try {
-			SdmController publisher = new SdmController(settings[0], settings[1], settings[2], clientId, settings[3]);
+			SdmController publisher = new SdmController(settings[1], settings[2], settings[3], clientId, settings[0]);
 			publisher.connect(options);
 
-			String topic = TopicHelper.constructTopic(settings[3], LaneType.MOTORISED, Direction.NORTH, 0, 0, ComponentType.TRAFFIC_LIGHT, 0);
-
-			byte[] bytes = SdmHelper.intToBytes(1);
-
-			SdmMessage msg = SdmMessage.createMessage(topic, bytes);
+			SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, Direction.NORTH, 0, 0, ComponentType.TRAFFIC_LIGHT, 0);
+			SdmMessage msg = SdmMessage.createMessage(topic, "Hallo Thomas".getBytes());
 
 			publisher.sendMessage(topic, msg);
 

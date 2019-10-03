@@ -16,7 +16,7 @@ public class SdmMessage extends MqttMessage {
 	/**
 	 * The topic
 	 */
-	private final String topic;
+	private final SdmTopic topic;
 	
 	/**
 	 * The qos priority
@@ -31,14 +31,14 @@ public class SdmMessage extends MqttMessage {
 	/**
 	 * Constructs a new {@link SdmMessage}
 	 */
-	public SdmMessage(String topic, byte[] message) {
+	public SdmMessage(SdmTopic topic, byte[] message) {
 		this(topic, message, QOS, RETAINED);
 	}
 	
 	/**
 	 * Constructs a new {@link SdmMessage}
 	 */
-	public SdmMessage(String topic, byte[] message, int qos, boolean retained) {
+	public SdmMessage(SdmTopic topic, byte[] message, int qos, boolean retained) {
 		super(message);
 		this.topic = topic;
 		setQos(qos);
@@ -51,7 +51,7 @@ public class SdmMessage extends MqttMessage {
 	 * @param message the message
 	 * @return
 	 */
-	public static SdmMessage createMessage(String topic, byte[] message) {
+	public static SdmMessage createMessage(SdmTopic topic, byte[] message) {
 		return new SdmMessage(topic, message);
 	}
 	
@@ -66,7 +66,7 @@ public class SdmMessage extends MqttMessage {
 	/**
 	 * @return The topic string
 	 */
-	public String getTopic() {
+	public SdmTopic getTopic() {
 		return topic;
 	}
 	

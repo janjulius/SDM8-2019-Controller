@@ -38,10 +38,10 @@ public class SdmController extends MqttClient {
 	 * @return
 	 * @throws MqttException
 	 */
-	public boolean sendMessage(String topic, MqttMessage msg) throws MqttException {
+	public boolean sendMessage(SdmTopic topic, MqttMessage msg) throws MqttException {
 		System.out.println("Sending message (" + msg + ") on topic: " + topic);
 		try {
-			publish(topic, msg);
+			publish(topic.toString(), msg);
 		} catch (MqttException e) {
 			SdmLogger.Log(this.toString(), e.getStackTrace().toString());
 			return false;
