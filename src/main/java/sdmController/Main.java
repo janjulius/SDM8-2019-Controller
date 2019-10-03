@@ -62,7 +62,7 @@ public class Main {
 			publisher.connect(options);
 
 			SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, Direction.NORTH, 0, 0, ComponentType.TRAFFIC_LIGHT, 0);
-			SdmMessage msg = SdmMessage.createMessage(topic, "Hallo Thomas".getBytes());
+			SdmMessage msg = SdmMessage.createMessage(topic, SdmHelper.intToBytes(1));
 
 			publisher.sendMessage(topic, msg);
 
