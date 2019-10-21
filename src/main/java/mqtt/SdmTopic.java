@@ -27,12 +27,6 @@ public class SdmTopic {
 	private LaneType laneType;
 	
 	/**
-	 * Jan Julius: The ordinal direction
-	 * Thomas: The cardinal direction
-	 */
-	private Direction direction;
-	
-	/**
 	 * The id of the traffic group
 	 */
 	private int groupId;
@@ -55,10 +49,9 @@ public class SdmTopic {
 	/**
 	 * Constructs a new {@link SdmTopic}
 	 */
-	public SdmTopic(String teamId, LaneType laneType, Direction direction, int groupId, int subgroupId, ComponentType componentType, int componentId) {
+	public SdmTopic(String teamId, LaneType laneType, int groupId, int subgroupId, ComponentType componentType, int componentId) {
 		this.teamId = teamId;
 		this.laneType = laneType;
-		this.direction = direction;
 		this.groupId = groupId;
 		this.subgroupId = subgroupId;
 		this.componentType = componentType;
@@ -67,7 +60,7 @@ public class SdmTopic {
 	
 	@Override
 	public String toString() {
-		return String.format("%s/%s/%s/%s/%s/%s/%s", teamId, laneType.getTopicName(), direction.getTopicName(), groupId, subgroupId, componentType.getTopicName(), componentId);
+		return String.format("%s/%s/%s/%s/%s/%s", teamId, laneType.getTopicName(), groupId, subgroupId, componentType.getTopicName(), componentId);
 	}
 	
 }
