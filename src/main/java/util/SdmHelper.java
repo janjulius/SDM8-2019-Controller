@@ -18,8 +18,10 @@ public class SdmHelper {
 	 * @return byte array which represents the integer {@link i}
 	 */
 	public static byte[] intToBytes(final int i) {
-		ByteBuffer b = ByteBuffer.allocate(4);
-		b.putInt(i);
-		return b.array();
+		byte[] bytes = ByteBuffer.allocate(4).putInt(i).array();
+		for (byte b : bytes) {
+		   System.out.format("0x%x ", b);
+		}
+		return bytes;
 	}
 }
