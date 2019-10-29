@@ -55,6 +55,8 @@ public class SdmMessage extends MqttMessage {
 		return new SdmMessage(topic, message);
 	}
 	
+	
+	
 	/**
 	 * Returns the message as the payload of the {@link MqttMessage}
 	 * @return byte array of payload

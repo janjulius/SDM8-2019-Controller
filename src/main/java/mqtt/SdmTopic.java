@@ -3,6 +3,7 @@
  */
 package mqtt;
 
+
 import enums.ComponentType;
 import enums.Direction;
 import enums.LaneType;
@@ -12,6 +13,8 @@ import enums.LaneType;
  * Represents an SdmTopic
  * @author Jan Julius de Lang
  * @author Thomas Tijsma
+ * @author Marco Geertsma
+ * @author Lars Schipper
  * @date Oct 4, 2019
  */
 public class SdmTopic {
@@ -29,12 +32,12 @@ public class SdmTopic {
 	/**
 	 * The id of the traffic group
 	 */
-	private int groupId;
+	private String groupId;
 	
 	/**
 	 * The subgroup of the {@link groupId}
 	 */
-	private int subgroupId;
+	private String subgroupId;
 	
 	/**
 	 * The componentType
@@ -44,18 +47,30 @@ public class SdmTopic {
 	/**
 	 * The componentId
 	 */
-	private int componentId;
+	private String componentId;
+	
 	
 	/**
 	 * Constructs a new {@link SdmTopic}
 	 */
-	public SdmTopic(String teamId, LaneType laneType, int groupId, int subgroupId, ComponentType componentType, int componentId) {
+	public SdmTopic(String teamId, LaneType laneType, String groupId, String subgroupId, ComponentType componentType, String componentId) {
 		this.teamId = teamId;
 		this.laneType = laneType;
 		this.groupId = groupId;
 		this.subgroupId = subgroupId;
 		this.componentType = componentType;
 		this.componentId = componentId;
+	}
+	
+	public SdmTopic(String teamId, LaneType laneType, Integer groupId, Integer subgroupId, ComponentType componentType, Integer componentId) {
+		this (teamId, laneType, groupId.toString(), subgroupId.toString(), componentType, componentId.toString());
+	}
+	
+	public SdmTopic(String topic) {
+		String[] topics = topic.split("/");
+		if(topics.length == 6)
+			this (topics[0], topics[1], groupId.toString(), subgroupId.toString(), componentType, componentId.toString());
+				
 	}
 	
 	@Override

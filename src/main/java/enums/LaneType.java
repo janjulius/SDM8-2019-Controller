@@ -19,6 +19,7 @@ public enum LaneType {
 	TRACK(4, "track"),
 	TRAIN(5, "track"),
 	BOAT(6, "vessel"),
+	ALL(7, "+")
 	;
 	
 	/**

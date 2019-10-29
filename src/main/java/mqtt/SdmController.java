@@ -3,6 +3,7 @@
  */
 package mqtt;
 
+import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -43,6 +44,16 @@ public class SdmController extends MqttClient {
 		try {
 			publish(topic.toString(), msg);
 		} catch (MqttException e) {
+			SdmLogger.Log(this.toString(), e.getStackTrace().toString());
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean subscribeToTopic(SdmTopic topic, IMqttMessageListener listener) throws MqttException{
+		try {
+			subscribe(topic.toString(), listener);
+		} catch(MqttException e) {
 			SdmLogger.Log(this.toString(), e.getStackTrace().toString());
 			return false;
 		}

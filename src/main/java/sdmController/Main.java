@@ -17,6 +17,7 @@ import mqtt.SdmController;
 import mqtt.SdmMessage;
 import mqtt.SdmTopic;
 import mqtt.Settings;
+import sdmMessageListener.SdmSensorListener;
 import util.Constants;
 import util.SdmHelper;
 
@@ -62,11 +63,17 @@ public class Main {
 			publisher.connect(options);
 
 			SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, 5, 0, ComponentType.TRAFFIC_LIGHT, 0);
+			SdmTopic allSensors = new SdmTopic(settings[0], LaneType.ALL, +, +, ComponentType.SENSOR, +);
+			
 			SdmMessage msg = SdmMessage.createMessage(topic, SdmHelper.intToBytes(2));
 
 			publisher.sendMessage(topic, msg);
 
 			System.out.println("Message sent succesfully");
+			
+			publisher.subscribeToTopic(topic, new SdmSensorListener());
+			
+			publisher.close();
 		} catch (MqttException e) {
 			e.printStackTrace();
 			try {
