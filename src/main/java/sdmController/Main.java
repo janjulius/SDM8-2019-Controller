@@ -25,6 +25,7 @@ import util.SdmHelper;
  * Main
  * 
  * @author Jan Julius de Lang
+ * @author Lars Schipper
  * @date Oct 3, 2019
  */
 public class Main {
@@ -63,7 +64,7 @@ public class Main {
 			publisher.connect(options);
 
 			SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, 5, 0, ComponentType.TRAFFIC_LIGHT, 0);
-			SdmTopic allSensors = new SdmTopic(settings[0], LaneType.ALL, +, +, ComponentType.SENSOR, +);
+			SdmTopic allSensors = new SdmTopic(settings[0], LaneType.ALL, "+", "+", ComponentType.SENSOR, "+");
 			
 			SdmMessage msg = SdmMessage.createMessage(topic, SdmHelper.intToBytes(2));
 

@@ -8,6 +8,7 @@ package enums;
  * ComponentType
  * Represents a component type
  * @author Jan Julius de Lang
+ * @author Lars Schipper
  * @date Oct 3, 2019
  */
 public enum ComponentType {
@@ -44,4 +45,14 @@ public enum ComponentType {
 		return topicName;
 	}
 	
+	private static final ComponentType[] enumValues = ComponentType.values();
+	
+	public static ComponentType fromInteger(int x) {
+        return enumValues[x];
+    }
+	
+	public static ComponentType fromInteger(String x) {
+		int number = Integer.parseInt(x);
+        return enumValues[number];
+    }
 }
