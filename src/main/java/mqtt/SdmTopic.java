@@ -35,11 +35,6 @@ public class SdmTopic {
 	private String groupId;
 	
 	/**
-	 * The subgroup of the {@link groupId}
-	 */
-	private String subgroupId;
-	
-	/**
 	 * The componentType
 	 */
 	private ComponentType componentType;
@@ -53,29 +48,28 @@ public class SdmTopic {
 	/**
 	 * Constructs a new {@link SdmTopic}
 	 */
-	public SdmTopic(String teamId, LaneType laneType, String groupId, String subgroupId, ComponentType componentType, String componentId) {
+	public SdmTopic(String teamId, LaneType laneType, String groupId, ComponentType componentType, String componentId) {
 		this.teamId = teamId;
 		this.laneType = laneType;
 		this.groupId = groupId;
-		this.subgroupId = subgroupId;
 		this.componentType = componentType;
 		this.componentId = componentId;
 	}
 	
-	public SdmTopic(String teamId, LaneType laneType, Integer groupId, Integer subgroupId, ComponentType componentType, Integer componentId) {
-		this (teamId, laneType, groupId.toString(), subgroupId.toString(), componentType, componentId.toString());
+	public SdmTopic(String teamId, LaneType laneType, Integer groupId, ComponentType componentType, Integer componentId) {
+		this (teamId, laneType, groupId.toString(), componentType, componentId.toString());
 	}
 	
 	public SdmTopic(String topic) {
 		String[] topics = topic.split("/");
-		if(topics.length == 6)
-			this (topics[0], topics[1], groupId.toString(), subgroupId.toString(), componentType, componentId.toString());
+		//if(topics.length == 6)
+			//this (topics[0], topics[1], groupId.toString(), componentType, componentId.toString());
 				
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("%s/%s/%s/%s/%s/%s", teamId, laneType.getTopicName(), groupId, subgroupId, componentType.getTopicName(), componentId);
+		return String.format("%s/%s/%s/%s/%s", teamId, laneType.getTopicName(), groupId, componentType.getTopicName(), componentId);
 	}
 	
 }
