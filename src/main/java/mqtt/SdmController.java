@@ -3,6 +3,8 @@
  */
 package mqtt;
 
+import java.util.Base64;
+
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -39,25 +41,33 @@ public class SdmController extends MqttClient {
 	 * @return
 	 * @throws MqttException
 	 */
-	public boolean sendMessage(SdmTopic topic, MqttMessage msg) throws MqttException {
-		System.out.println("Sending message (" + msg + ") on topic: " + topic);
+	public boolean sendMessage(SdmMessage msg) throws MqttException {
 		try {
-			publish(topic.toString(), msg);
-		} catch (MqttException e) {
-			SdmLogger.Log(this.toString(), e.getStackTrace().toString());
+			System.out.println("Sending message (" +  msg.getPayload() + ") on topic: " + msg.getTopic().toString());
+			publish(msg.getTopic().toString(), msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+			//SdmLogger.Log(this.toString(), e.getStackTrace().toString());
 			return false;
 		}
+		
+		System.out.println("Message sent succesfully");
 		return true;
 	}
 	
 	public boolean subscribeToTopic(SdmTopic topic, IMqttMessageListener listener) throws MqttException{
 		try {
 			subscribe(topic.toString(), listener);
+			System.out.println("Subscribing to: " + topic.toString());
 		} catch(MqttException e) {
-			SdmLogger.Log(this.toString(), e.getStackTrace().toString());
+			e.printStackTrace();
+			//SdmLogger.Log(this.toString(), e.getStackTrace().toString());
 			return false;
 		}
 		return true;
 	}
-
+	
+	public void queueTopic(SdmTopic topic) {
+		//TODO create queue
+	}
 }

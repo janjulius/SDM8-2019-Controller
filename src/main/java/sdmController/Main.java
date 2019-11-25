@@ -38,7 +38,8 @@ public class Main {
 	/**
 	 * Settings of this application (can be overriden by arguments)
 	 */
-	private static String[] settings = new String[] { Constants.CONNECTED_TEAM, Constants.PROTOCOL, Constants.ADDRESS, Constants.PORT };
+	private static String[] settings = new String[] { Constants.CONNECTED_TEAM, Constants.PROTOCOL, Constants.ADDRESS,
+			Constants.PORT };
 
 	/**
 	 * The main entry point of the program
@@ -62,27 +63,23 @@ public class Main {
 		try {
 			SdmController publisher = new SdmController(settings[1], settings[2], settings[3], clientId, settings[0]);
 			publisher.connect(options);
-
+			
 			SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, 5, ComponentType.TRAFFIC_LIGHT, 0);
 			SdmTopic allSensors = new SdmTopic(settings[0], LaneType.ALL, "+", ComponentType.SENSOR, "+");
-			
+
 			SdmMessage msg = SdmMessage.createMessage(topic, SdmHelper.intToBytes(2));
 
-			publisher.sendMessage(topic, msg);
+			publisher.sendMessage(msg);			
+			publisher.subscribeToTopic(allSensors, new SdmSensorListener(publisher));
 
-			System.out.println("Message sent succesfully");
-			
-			publisher.subscribeToTopic(topic, new SdmSensorListener());
-			
-			publisher.close();
 		} catch (MqttException e) {
 			e.printStackTrace();
-			try {
-				SdmLogger.Save();
-			} catch (IOException e1) {
-				System.out.println("Was not able to save error log.");
-				e1.printStackTrace();
-			}
+//			try {
+//				SdmLogger.Save();
+//			} catch (IOException e1) {
+//				System.out.println("Was not able to save error log.");
+//				e1.printStackTrace();
+//			}
 		}
 	}
 

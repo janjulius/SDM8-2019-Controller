@@ -61,4 +61,8 @@ public enum LaneType {
         return enumValues[number];
     }
 	
+	public static LaneType fromString(String x) {
+		return LaneType.valueOf(x.toUpperCase());
+	}
+	
 }

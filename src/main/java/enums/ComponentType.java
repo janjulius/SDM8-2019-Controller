@@ -58,4 +58,8 @@ public enum ComponentType {
 		int number = Integer.parseInt(x);
         return enumValues[number];
     }
+	
+	public static ComponentType fromString(String x) {
+		return ComponentType.valueOf(x.toUpperCase());
+	}
 }

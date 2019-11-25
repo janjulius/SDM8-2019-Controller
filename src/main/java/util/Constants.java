@@ -30,5 +30,8 @@ public class Constants {
 	 * Team id to connect to
 	 */
 	public static final String CONNECTED_TEAM = "8";
-
+	
+	public static final int BARRIER_TRANSITION = 4;
+	
+	public static final int DECK_TRANSITION = 10;
 }

@@ -62,11 +62,16 @@ public class SdmTopic {
 	
 	public SdmTopic(String topic) {
 		this(GetTopics(topic)[0],
-				LaneType.fromInteger(GetTopics(topic)[1]), 
+				LaneType.fromString(GetTopics(topic)[1]), 
 				GetTopics(topic)[2],
-				ComponentType.fromInteger(GetTopics(topic)[4]),
-				GetTopics(topic)[5]
+				ComponentType.fromString(GetTopics(topic)[3]),
+				GetTopics(topic)[4]
 		);
+	}
+	
+	public SdmTopic GetCorrespondingTrafficLight() {
+		this.componentType = ComponentType.TRAFFIC_LIGHT;
+		return this;
 	}
 	
 	private static String[] GetTopics(String topic) {
