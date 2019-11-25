@@ -64,7 +64,6 @@ public class SdmTopic {
 		this(GetTopics(topic)[0],
 				LaneType.fromInteger(GetTopics(topic)[1]), 
 				GetTopics(topic)[2],
-				GetTopics(topic)[3],
 				ComponentType.fromInteger(GetTopics(topic)[4]),
 				GetTopics(topic)[5]
 		);

@@ -63,8 +63,8 @@ public class Main {
 			SdmController publisher = new SdmController(settings[1], settings[2], settings[3], clientId, settings[0]);
 			publisher.connect(options);
 
-			SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, 5, 0, ComponentType.TRAFFIC_LIGHT, 0);
-			SdmTopic allSensors = new SdmTopic(settings[0], LaneType.ALL, "+", "+", ComponentType.SENSOR, "+");
+			SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, 5, ComponentType.TRAFFIC_LIGHT, 0);
+			SdmTopic allSensors = new SdmTopic(settings[0], LaneType.ALL, "+", ComponentType.SENSOR, "+");
 			
 			SdmMessage msg = SdmMessage.createMessage(topic, SdmHelper.intToBytes(2));
 
