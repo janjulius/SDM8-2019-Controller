@@ -19,7 +19,7 @@ public class Constants {
 	/**
 	 * The default address to connect to
 	 */
-	public static final String ADDRESS = "91.121.165.36";
+	public static final String ADDRESS = "62.210.180.72";
 
 	/**
 	 * The default port

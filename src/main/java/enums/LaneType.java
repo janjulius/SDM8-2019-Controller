@@ -8,6 +8,7 @@ package enums;
  * LaneType
  * Represents a lane type
  * @author Jan Julius de Lang
+ * @author Lars Schipper
  * @date Oct 3, 2019
  */
 public enum LaneType {
@@ -48,5 +49,16 @@ public enum LaneType {
 	public int getUid() {
 		return uid;
 	}
+	
+	private static final LaneType[] enumValues = LaneType.values();
+	
+	public static LaneType fromInteger(int x) {
+        return enumValues[x];
+    }
+	
+	public static LaneType fromInteger(String x) {
+		int number = Integer.parseInt(x);
+        return enumValues[number];
+    }
 	
 }

@@ -61,10 +61,17 @@ public class SdmTopic {
 	}
 	
 	public SdmTopic(String topic) {
-		String[] topics = topic.split("/");
-		//if(topics.length == 6)
-			//this (topics[0], topics[1], groupId.toString(), componentType, componentId.toString());
-				
+		this(GetTopics(topic)[0],
+				LaneType.fromInteger(GetTopics(topic)[1]), 
+				GetTopics(topic)[2],
+				GetTopics(topic)[3],
+				ComponentType.fromInteger(GetTopics(topic)[4]),
+				GetTopics(topic)[5]
+		);
+	}
+	
+	private static String[] GetTopics(String topic) {
+		return topic.split("/");
 	}
 	
 	@Override
