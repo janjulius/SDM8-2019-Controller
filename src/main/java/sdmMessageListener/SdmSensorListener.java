@@ -5,6 +5,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import mqtt.SdmController;
+import mqtt.SdmMessage;
 import mqtt.SdmTopic;
 import util.SdmHelper;
 
@@ -26,9 +27,16 @@ public class SdmSensorListener implements IMqttMessageListener {
 
 		if(value == 1) {
 			SdmTopic correspondingTrafficLightTopic = new SdmTopic(topic).getCorrespondingTrafficLight();
+			SdmMessage sdmMessage = new SdmMessage(correspondingTrafficLightTopic, SdmHelper.intToBytes(1));
 			
-			// Check if it can be turned on, else queue.
-			publisher.publish(correspondingTrafficLightTopic, SdmHelper.intToBytes(1));
+			// Check if it can be turned on, else queue (or something).
+			boolean isValid = true;
+			if(isValid) {
+				publisher.publish(sdmMessage);
+			}
+			else {
+				publisher.queue(sdmMessage);
+			}
 		}
 	}
 }

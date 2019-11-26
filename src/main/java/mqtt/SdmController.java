@@ -35,9 +35,16 @@ public class SdmController {
 		messager.run();
 	}
 	
+	public void publish(SdmMessage sdmMessage) throws MqttException {
+		publish(sdmMessage.topic, sdmMessage.message);
+	}
+	
 	public void subscribe(SdmTopic topic, IMqttMessageListener listener) throws MqttException {
 		SdmSubscriber subscriber = new SdmSubscriber(topic, listener);
 		subscriber.run();
 	}
 	
+	public void queue(SdmMessage sdmMessage) {
+		// TODO Implement
+	}
 }
