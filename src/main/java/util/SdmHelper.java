@@ -3,11 +3,12 @@
  */
 package util;
 
-import java.nio.ByteBuffer;
+import java.io.UnsupportedEncodingException;
 
 /**
  * SdmHelper
  * @author Jan Julius de Lang
+ * @author Lars Schipper
  * @date Oct 4, 2019
  */
 public class SdmHelper {
@@ -16,12 +17,9 @@ public class SdmHelper {
 	 * Converts an integer to a byte array
 	 * @param i the integer
 	 * @return byte array which represents the integer {@link i}
+	 * @throws UnsupportedEncodingException 
 	 */
 	public static byte[] intToBytes(final int i) {
-		byte[] bytes = ByteBuffer.allocate(4).putInt(i).array();
-		for (byte b : bytes) {
-		   System.out.format("0x%x ", b);
-		}
-		return bytes;
+		return new Integer(i).toString().getBytes();
 	}
 }

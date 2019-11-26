@@ -14,7 +14,7 @@ import enums.Direction;
 import enums.LaneType;
 import logger.SdmLogger;
 import mqtt.SdmController;
-import mqtt.SdmMessage;
+import mqtt.SdmMessager;
 import mqtt.SdmTopic;
 import mqtt.Settings;
 import sdmMessageListener.SdmSensorListener;
@@ -54,24 +54,15 @@ public class Main {
 
 		for (int i = 0; i < args.length; i++)
 			settings[i] = settings[i] != args[i] ? args[i] : settings[i];
-
-		MqttConnectOptions options = new MqttConnectOptions();
-		options.setAutomaticReconnect(Settings.AUTOMATIC_RECONNECT);
-		options.setCleanSession(Settings.CLEAN_ON_START);
-		options.setConnectionTimeout(Settings.CONNECTION_TIMEOUT);
-
-		try {
-			SdmController publisher = new SdmController(settings[1], settings[2], settings[3], clientId, settings[0]);
-			publisher.connect(options);
 			
-			SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, 5, ComponentType.TRAFFIC_LIGHT, 0);
+		try {
+			SdmController publisher = new SdmController();
+			
 			SdmTopic allSensors = new SdmTopic(settings[0], LaneType.ALL, "+", ComponentType.SENSOR, "+");
 
-			SdmMessage msg = SdmMessage.createMessage(topic, SdmHelper.intToBytes(2));
-
-			publisher.sendMessage(msg);			
-			publisher.subscribeToTopic(allSensors, new SdmSensorListener(publisher));
-
+			//SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, 5, ComponentType.SENSOR, 0);
+			//publisher.publish(topic, SdmHelper.intToBytes(1));			
+			publisher.subscribe(allSensors, new SdmSensorListener(publisher));
 		} catch (MqttException e) {
 			e.printStackTrace();
 //			try {

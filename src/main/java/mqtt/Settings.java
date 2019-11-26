@@ -27,4 +27,13 @@ public class Settings {
 	 */
 	public static final int CONNECTION_TIMEOUT = 10;
 
+	/**
+	 * Quality of service
+	 */
+	public static final int QOS = 1;
+	
+	/**
+	 * Quality of service
+	 */
+	public static final boolean MESSAGE_RETAINED = true;
 }

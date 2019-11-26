@@ -61,20 +61,20 @@ public class SdmTopic {
 	}
 	
 	public SdmTopic(String topic) {
-		this(GetTopics(topic)[0],
-				LaneType.fromString(GetTopics(topic)[1]), 
-				GetTopics(topic)[2],
-				ComponentType.fromString(GetTopics(topic)[3]),
-				GetTopics(topic)[4]
+		this(getTopics(topic)[0],
+				LaneType.fromString(getTopics(topic)[1]), 
+				getTopics(topic)[2],
+				ComponentType.fromString(getTopics(topic)[3]),
+				getTopics(topic)[4]
 		);
 	}
 	
-	public SdmTopic GetCorrespondingTrafficLight() {
+	public SdmTopic getCorrespondingTrafficLight() {
 		this.componentType = ComponentType.TRAFFIC_LIGHT;
 		return this;
 	}
 	
-	private static String[] GetTopics(String topic) {
+	private static String[] getTopics(String topic) {
 		return topic.split("/");
 	}
 	
