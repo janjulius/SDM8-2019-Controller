@@ -70,7 +70,13 @@ public class SdmTopic {
 	}
 	
 	public SdmTopic getCorrespondingTrafficLight() {
-		this.componentType = ComponentType.TRAFFIC_LIGHT;
+		if(this.laneType == LaneType.VESSEL)
+			this.componentType = ComponentType.BOAT_LIGHT;
+		else if(this.laneType == LaneType.TRACK)
+			this.componentType = ComponentType.TRAIN_LIGHT;
+		else
+			this.componentType = ComponentType.TRAFFIC_LIGHT;
+		
 		this.componentId = "0";
 		return this;
 	}

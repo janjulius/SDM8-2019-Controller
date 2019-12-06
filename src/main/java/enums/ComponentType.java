@@ -20,6 +20,7 @@ public enum ComponentType {
 	BOAT_LIGHT(4, "boat_light"),
 	DECK(5, "deck"),
 	DECK_SENSOR(6, "deck_sensor"),
+	TRAIN_LIGHT(7, "train_light")
 	;
 	
 	/**
