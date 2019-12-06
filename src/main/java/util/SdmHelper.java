@@ -4,6 +4,7 @@
 package util;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 
 /**
  * SdmHelper
@@ -21,5 +22,14 @@ public class SdmHelper {
 	 */
 	public static byte[] intToBytes(final int i) {
 		return new Integer(i).toString().getBytes();
+	}
+	
+	/**
+	 * Converts a byte array to integer
+	 * @param b the array
+	 * @return integer converted from byte {@link b}
+	 */
+	public static int bytesToInt(final byte[] b) {
+		return (Integer.parseInt(new String(b)));
 	}
 }

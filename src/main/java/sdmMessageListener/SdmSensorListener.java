@@ -5,6 +5,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import mqtt.SdmController;
+import mqtt.SdmHandler;
 import mqtt.SdmMessage;
 import mqtt.SdmTopic;
 import util.SdmHelper;
@@ -23,20 +24,19 @@ public class SdmSensorListener implements IMqttMessageListener {
 
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		int value = Integer.parseInt(new String(message.getPayload()));
-		System.out.println("Received: " + topic + " value: " + value);
 
-		if(value == 1) {
+		if(value > 0) {
+			System.out.println("Received: " + topic + " value: " + value);
 			SdmTopic correspondingTrafficLightTopic = new SdmTopic(topic).getCorrespondingTrafficLight();
-			SdmMessage sdmMessage = new SdmMessage(correspondingTrafficLightTopic, SdmHelper.intToBytes(1));
+			SdmMessage sdmMessage = new SdmMessage(correspondingTrafficLightTopic, message.getPayload());
+			publisher.queue(sdmMessage);
 			
-			// Check if it can be turned on, else queue (or something).
-			boolean isValid = true;
-			if(isValid) {
-				publisher.publish(sdmMessage);
-			}
-			else {
-				publisher.queue(sdmMessage);
-			}
+			System.out.println(publisher.getSdmMessageQ().peek() + " " + sdmMessage);
+
+			if(publisher.getSdmMessageQ().peek() == sdmMessage)
+				publisher.handleMessage(sdmMessage);
 		}
 	}
+	
+	
 }

@@ -3,20 +3,14 @@
  */
 package sdmController;
 
-import java.io.IOException;
 import java.util.UUID;
 
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import enums.ComponentType;
-import enums.Direction;
 import enums.LaneType;
-import logger.SdmLogger;
 import mqtt.SdmController;
-import mqtt.SdmMessager;
 import mqtt.SdmTopic;
-import mqtt.Settings;
 import sdmMessageListener.SdmSensorListener;
 import util.Constants;
 import util.SdmHelper;
@@ -60,8 +54,8 @@ public class Main {
 			
 			SdmTopic allSensors = new SdmTopic(settings[0], LaneType.ALL, "+", ComponentType.SENSOR, "+");
 
-			//SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, 5, ComponentType.SENSOR, 0);
-			//publisher.publish(topic, SdmHelper.intToBytes(1));			
+//			SdmTopic topic = new SdmTopic(settings[0], LaneType.MOTORISED, 5, ComponentType.TRAFFIC_LIGHT, 0);
+//			publisher.publish(topic, SdmHelper.intToBytes(2));			
 			publisher.subscribe(allSensors, new SdmSensorListener(publisher));
 		} catch (MqttException e) {
 			e.printStackTrace();

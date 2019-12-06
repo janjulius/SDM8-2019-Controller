@@ -71,6 +71,7 @@ public class SdmTopic {
 	
 	public SdmTopic getCorrespondingTrafficLight() {
 		this.componentType = ComponentType.TRAFFIC_LIGHT;
+		this.componentId = "0";
 		return this;
 	}
 	
@@ -78,9 +79,17 @@ public class SdmTopic {
 		return topic.split("/");
 	}
 	
+	public ComponentType getComponentType() {
+		return componentType;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("%s/%s/%s/%s/%s", teamId, laneType.getTopicName(), groupId, componentType.getTopicName(), componentId);
+	}
+
+	public boolean fundamentallyTheSameAs(SdmTopic b) {
+		return groupId.equals(b.groupId);
 	}
 	
 }
