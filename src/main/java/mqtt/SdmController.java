@@ -109,7 +109,6 @@ public class SdmController {
 	}
 	
 	public void handleMessage(SdmMessage sdmMessage) throws MqttException {
-		System.out.println("Handling message: " + sdmMessage);
 		int value = 0;
 		try {
 		 value = SdmHelper.bytesToInt(sdmMessage.message);
@@ -123,12 +122,10 @@ public class SdmController {
 	}
 	
 	private boolean topicFundamentsEquals(SdmTopic a, SdmTopic b) {
-		System.out.println("FUND: " + a.fundamentallyTheSameAs(b));
 		return a.fundamentallyTheSameAs(b);
 	}
 	
 	private boolean isFilteredTopic(SdmMessage msg) {
-		System.out.println("ADIJFOPDAO" + msg.toString());
 		for (String string : filteredTopics) 
 			if(msg.topic.toString().equals(string))
 				return true;
