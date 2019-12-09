@@ -12,7 +12,7 @@ import util.SdmHelper;
 /**
  * SdmHandler
  * @author Jan Julius de Lang
- * @date Dec 5, 2019
+ * @date Dec 6, 2019 03:00 AM
  */
 public class SdmHandler extends Thread {
 
