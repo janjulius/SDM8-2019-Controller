@@ -1,16 +1,31 @@
 package mqtt;
 
+import util.SdmHelper;
+
 public class SdmMessage {
-	public final SdmTopic topic;
-	public byte[] message;
+	private final SdmTopic topic;
+	private byte[] message;
 	
 	public SdmMessage(SdmTopic topic, byte[] message) {
 		this.topic = topic;
 		this.message = message;
 	}
 	
+	public SdmMessage(SdmTopic topic, int message) {
+		this.topic = topic;
+		this.message = SdmHelper.intToBytes(message);
+	}
+	
 	public void setMessage(byte[] message) {
 		this.message = message;
+	}
+	
+	public SdmTopic getTopic() {
+		return topic;
+	}
+	
+	public byte[] getMessage() {
+		return message;
 	}
 	
 	@Override

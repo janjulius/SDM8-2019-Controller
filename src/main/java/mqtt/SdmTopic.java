@@ -7,6 +7,7 @@ package mqtt;
 import enums.ComponentType;
 import enums.Direction;
 import enums.LaneType;
+import janjulius.Tuple;
 
 /**
  * SdmTopic
@@ -75,6 +76,12 @@ public class SdmTopic {
 		return this;
 	}
 	
+	public SdmTopic getCorrespondingSensors() {
+		this.componentType = ComponentType.SENSOR;
+		this.componentId = "0";
+		return this;
+	}
+	
 	private static String[] getTopics(String topic) {
 		return topic.split("/");
 	}
@@ -83,13 +90,42 @@ public class SdmTopic {
 		return componentType;
 	}
 	
+	
+	public String getComponentId() {
+		return componentId;
+	}
+	
+	
+	public LaneType getLaneType() {
+		return laneType;
+	}
+	
+	public String getGroupId() {
+		return groupId;
+	}
+	
+	public boolean fundamentallyTheSameAs(SdmTopic b) {
+		return groupId.equals(b.groupId);
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("%s/%s/%s/%s/%s", teamId, laneType.getTopicName(), groupId, componentType.getTopicName(), componentId);
 	}
-
-	public boolean fundamentallyTheSameAs(SdmTopic b) {
-		return groupId.equals(b.groupId);
+	
+	@Override
+	public boolean equals(Object o) {
+		if(this == o)
+			return true;
+		if(o == null || getClass() != o.getClass())
+			return false;
+		SdmTopic topic = (SdmTopic)o;
+		return teamId == topic.teamId &&
+				laneType == topic.laneType &&
+				groupId == topic.groupId &&
+				componentType == topic.componentType &&
+				componentId == topic.componentId;
+		
 	}
 	
 }

@@ -28,7 +28,7 @@ public class SdmHandler extends Thread {
 
 		try {
 			
-			if(message.topic.getComponentType() == ComponentType.TRAFFIC_LIGHT)
+			if(message.getTopic().getComponentType() == ComponentType.TRAFFIC_LIGHT)
 				message.setMessage(SdmHelper.intToBytes(2));
 			else
 				message.setMessage(SdmHelper.intToBytes(1));
@@ -39,7 +39,7 @@ public class SdmHandler extends Thread {
 			System.out.println(e);
 		}
 		
-		if(message.topic.getComponentType() == ComponentType.TRAFFIC_LIGHT) { //if traffic light set to orange
+		if(message.getTopic().getComponentType() == ComponentType.TRAFFIC_LIGHT) { //if traffic light set to orange
 			try {
 				Thread.sleep(1_000);
 				message.setMessage(SdmHelper.intToBytes(1));
@@ -66,7 +66,7 @@ public class SdmHandler extends Thread {
 		}
 		
 		try {
-			System.out.println("removing: " + message.topic);
+			System.out.println("removing: " + message.getTopic());
 			for (SdmMessage asdf : publisher.getSdmMessageQ()) {
 				System.out.println(asdf);
 			}
