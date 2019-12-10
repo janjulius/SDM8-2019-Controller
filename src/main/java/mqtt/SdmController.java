@@ -114,7 +114,7 @@ public class SdmController {
 
 	public void pollQueue() throws MqttException {
 		SdmMessage msg = sdmMessageQ.poll();
-		handleMessage();
+		handleMessage(msg);
 	}
 	
 	public void handleMessage() throws MqttException {
@@ -124,14 +124,6 @@ public class SdmController {
 	}
 	
 	public void handleMessage(SdmMessage sdmMessage) throws MqttException {
-		int value = 0;
-		try {
-		 value = SdmHelper.bytesToInt(sdmMessage.getMessage());
-		}
-		catch(Exception e) {
-			System.out.println(e);
-		}
-		
 		SdmHandler handlerhomie = new SdmHandler(this, sdmMessage);
 		handlerhomie.start();
 		for (SdmMessage msg : SdmGrouper.getRelatedGroups(sdmMessage.getTopic(), this)) {
