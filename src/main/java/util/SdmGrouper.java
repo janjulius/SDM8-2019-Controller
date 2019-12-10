@@ -111,7 +111,7 @@ public class SdmGrouper {
 	 * @param messageArrays
 	 * @return messages to send
 	 */
-	public static SdmMessage[] findBusiestGroup(SdmMessage[][] messageArrays, SdmTopic filter) {
+	private static SdmMessage[] findBusiestGroup(SdmMessage[][] messageArrays, SdmTopic filter) {
 		int weight = 0;
 		SdmMessage[] result = null;
 		
@@ -143,7 +143,12 @@ public class SdmGrouper {
 		return result;
 	}
 	
-	public static SdmMessage[] getMessages(SdmTopic topic) {
+	/**
+	 * Returns messages (that should be set) related to the topic
+	 * @param topic
+	 * @return message array of which to send on new threads
+	 */
+	private static SdmMessage[] getMessages(SdmTopic topic) {
 		List<SdmMessage> result = new ArrayList<SdmMessage>();
 		
 		String teamId = Constants.CONNECTED_TEAM;
