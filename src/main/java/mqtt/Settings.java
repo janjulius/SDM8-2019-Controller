@@ -4,8 +4,7 @@
 package mqtt;
 
 /**
- * Settings 
- * Settings for the SDM Controller
+ * Settings Settings for the SDM Controller
  * 
  * @author Jan Julius de Lang
  * @date Oct 3, 2019
@@ -31,7 +30,7 @@ public class Settings {
 	 * Quality of service
 	 */
 	public static final int QOS = 1;
-	
+
 	/**
 	 * Quality of service
 	 */
