@@ -14,6 +14,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import enums.ComponentType;
 import janjulius.Tuple;
 import util.Constants;
+import util.SdmGrouper;
 import util.SdmHelper;
 
 
@@ -133,6 +134,10 @@ public class SdmController {
 		
 		SdmHandler handlerhomie = new SdmHandler(this, sdmMessage);
 		handlerhomie.start();
+		for (SdmMessage msg : SdmGrouper.getRelatedGroups(sdmMessage.getTopic(), this)) {
+			handlerhomie = new SdmHandler(this, msg);
+			handlerhomie.start();
+		}
 	}
 	
 	private boolean topicFundamentsEquals(SdmTopic a, SdmTopic b) {
