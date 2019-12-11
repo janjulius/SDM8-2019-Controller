@@ -1,6 +1,7 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import enums.ComponentType;
@@ -73,9 +74,14 @@ public class SdmGrouper {
 	 * @param topic the topic
 	 * @return an array of messages to send
 	 */
-	public static SdmMessage[] getRelatedGroups(SdmTopic topic, SdmController p) {
+	public static List<SdmMessage> getRelatedGroups(SdmTopic topic, SdmController p) {
 		publisher = p;
-		return getMessages(topic);
+		List<SdmMessage> result = getMessages(topic);
+		System.out.println("getRelatedGroups results: ");
+		for (SdmMessage sdmMessage : result) {
+			System.out.println(sdmMessage.toString());
+		}
+		return result;
 	}
 
 	/**
@@ -84,9 +90,9 @@ public class SdmGrouper {
 	 * @param messageArrays
 	 * @return messages to send
 	 */
-	private static SdmMessage[] findBusiestGroup(SdmMessage[][] messageArrays, SdmTopic filter) {
+	private static List<SdmMessage> findBusiestGroup(SdmMessage[][] messageArrays, SdmTopic filter) {
 		int weight = 0;
-		SdmMessage[] result = null;
+		List<SdmMessage> result = new ArrayList<SdmMessage>();
 
 		for (SdmMessage[] messageArray : messageArrays) {
 			int curWeight = 0;
@@ -98,21 +104,34 @@ public class SdmGrouper {
 				}
 				if (!found)
 					continue;
-			}
-			for (SdmMessage msg : messageArray) {
-				for (Tuple<SdmTopic, byte[]> sdmMessage : publisher.getSensorStatus()) {
-					if (sdmMessage.getLeft().equals(msg.getTopic())) {
-						if (SdmHelper.bytesToInt(sdmMessage.getRight()) >= 1) {
+
+				for (Tuple<SdmTopic, byte[]> broeders : publisher.getSensorStatus()) {
+					for (SdmMessage msg : messageArray) {
+						if (msg.getTopic().getCorrespondingSensors().toString() == broeders.getLeft().getCorrespondingSensors().toString()) {
 							curWeight++;
+						}
+						msg.getTopic().getCorrespondingTrafficLight();
+						broeders.getLeft().getCorrespondingTrafficLight();
+					}
+				}
+			} else {
+				for (SdmMessage msg : messageArray) {
+					for (Tuple<SdmTopic, byte[]> sdmMessage : publisher.getSensorStatus()) {
+						if (sdmMessage.getLeft().equals(msg.getTopic())) {
+							if (SdmHelper.bytesToInt(sdmMessage.getRight()) >= 1) {
+								curWeight++;
+							}
 						}
 					}
 				}
 			}
-			if (curWeight > weight) {
-				result = messageArray;
+			if (curWeight >= weight) {
+				result = Arrays.asList(messageArray);
+				weight = curWeight;
 			}
 		}
-
+		if (result != null)
+			System.out.println("Busiest group size is: " + result.size());
 		return result;
 	}
 
@@ -122,7 +141,8 @@ public class SdmGrouper {
 	 * @param topic
 	 * @return message array of which to send on new threads
 	 */
-	private static SdmMessage[] getMessages(SdmTopic topic) {
+	private static List<SdmMessage> getMessages(SdmTopic topic) {
+		System.out.println("getting messages");
 		List<SdmMessage> result = new ArrayList<SdmMessage>();
 
 		String teamId = Constants.CONNECTED_TEAM;
@@ -141,12 +161,16 @@ public class SdmGrouper {
 				}
 			}
 		} else {
-			for (SdmMessage sdmMessage : findBusiestGroup(trackFreeGroups, topic)) {
-				result.add(sdmMessage);
+			List<SdmMessage> busiestGroup = findBusiestGroup(trackFreeGroups, topic);
+			if (busiestGroup != null) {
+				for (SdmMessage sdmMessage : busiestGroup) {
+					result.add(sdmMessage);
+				}
 			}
 		}
 
-		return (SdmMessage[]) result.toArray();
+		System.out.println("getMessages method resulted in an array of size: " + result.size());
+		return result;
 	}
 
 }

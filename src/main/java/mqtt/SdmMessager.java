@@ -37,7 +37,7 @@ public class SdmMessager extends SdmController implements Runnable {
 			//SdmLogger.Log(this.toString(), e.getStackTrace().toString());
 		}
 
-		System.out.println("Message sent succesfully");
+		System.out.println("Message sent succesfully (" + topic.toString() + ")");
 	}
 
 }

@@ -115,7 +115,13 @@ public class SdmTopic {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		SdmTopic topic = (SdmTopic) o;
-		return teamId == topic.teamId && laneType == topic.laneType && groupId == topic.groupId && componentType == topic.componentType && componentId == topic.componentId;
+//		System.out.println(topic.toString() + " " + o.toString() + " " + (topic.toString().equals(o.toString())) + (teamId.equals(topic.teamId) && laneType.equals(topic.laneType) && groupId.equals(topic.groupId) && componentType.equals(topic.componentType) && componentId.equals(topic.componentId)));
+//		System.out.println(teamId.equals(topic.teamId));
+//		System.out.println(laneType.equals(topic.laneType));
+//		System.out.println(groupId.equals(topic.groupId));
+//		System.out.println(componentType.equals(topic.componentType));
+//		System.out.println(componentId.equals(topic.componentId));
+		return teamId.equals(topic.teamId) && laneType.equals(topic.laneType) && groupId.equals(topic.groupId) && componentType.equals(topic.componentType) && componentId.equals(topic.componentId);
 
 	}
 

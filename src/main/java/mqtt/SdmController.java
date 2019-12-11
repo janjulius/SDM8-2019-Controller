@@ -12,9 +12,9 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import enums.ComponentType;
+import enums.LaneType;
 import janjulius.Tuple;
 import util.Constants;
-import util.SdmGrouper;
 
 /**
  * Repersents the SdmController and handles all related things
@@ -39,6 +39,8 @@ public class SdmController {
 	 * Filtered topics for regular traffic lights queue
 	 */
 	private final String[] filteredTopics = { "8/vessel/3/sensor/0" };
+	
+	private final SdmTopic[] filteredSensors = { new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 3) };
 
 	public SdmController() throws MqttException {
 		String clientId = UUID.randomUUID().toString();
@@ -77,7 +79,7 @@ public class SdmController {
 				for (SdmMessage qmsg : sdmMessageQ) {
 					if (qmsg.equals(sdmMessage))
 						return;
-					if (topicFundamentsEquals(qmsg.getTopic(), sdmMessage.getTopic()))
+					if (qmsg.getTopic().equals(sdmMessage.getTopic()))
 						return;
 					System.out.println("ADDED TO QUEUE");
 					sdmMessageQ.add(sdmMessage);
@@ -115,29 +117,19 @@ public class SdmController {
 		handleMessage(msg);
 	}
 
-	public void handleMessage() throws MqttException {
-		if (!sdmMessageQ.isEmpty()) {
-			handleMessage(sdmMessageQ.peek());
-		}
-	}
-
 	public void handleMessage(SdmMessage sdmMessage) throws MqttException {
 		SdmHandler handlerhomie = new SdmHandler(this, sdmMessage);
 		handlerhomie.start();
-		for (SdmMessage msg : SdmGrouper.getRelatedGroups(sdmMessage.getTopic(), this)) {
-			handlerhomie = new SdmHandler(this, msg);
-			handlerhomie.start();
-		}
-	}
-
-	private boolean topicFundamentsEquals(SdmTopic a, SdmTopic b) {
-		return a.fundamentallyTheSameAs(b);
 	}
 
 	private boolean isFilteredTopic(SdmMessage msg) {
 		for (String string : filteredTopics)
 			if (msg.getTopic().toString().equals(string))
 				return true;
+		for (SdmTopic sdmTopic : filteredSensors) {
+			if(sdmTopic.equals(msg.getTopic()))
+				return true;
+		}
 		return false;
 	}
 
