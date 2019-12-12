@@ -10,19 +10,31 @@ import util.Constants;
 import util.SdmHelper;
 
 /**
- * SdmHandler
+ * SdmHandler Handles requests from the controller represents its own thread
  * 
  * @author Jan Julius de Lang
  * @date Dec 6, 2019 03:00 AM
  */
 public class SdmHandler extends Thread {
 
+	/**
+	 * The publisher
+	 */
 	private final SdmController publisher;
 
+	/**
+	 * The message of this thread
+	 */
 	private final SdmMessage message;
 
+	/**
+	 * If this is busy
+	 */
 	private boolean working = true;
 
+	/**
+	 * Constructs a new {@link SdmHandler}
+	 */
 	public SdmHandler(SdmController pub, SdmMessage msg) {
 		publisher = pub;
 		message = msg;

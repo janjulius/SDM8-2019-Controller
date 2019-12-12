@@ -48,17 +48,35 @@ public enum ComponentType {
 		return topicName;
 	}
 	
+	/**
+	 * {@link ComponentType} enum converted to an array of {@link ComponentType}
+	 */
 	private static final ComponentType[] enumValues = ComponentType.values();
 	
+	/**
+	 * Returns the ComponentType based on the id in the sequence
+	 * @param x the id
+	 * @return The {@link ComponentType}
+	 */
 	public static ComponentType fromInteger(int x) {
         return enumValues[x];
     }
 	
+	/**
+	 * Returns the ComponentType based on the id in the sequence
+	 * @param x the id
+	 * @return The {@link LaneType}
+	 */
 	public static ComponentType fromInteger(String x) {
 		int number = Integer.parseInt(x);
         return enumValues[number];
     }
 	
+	/**
+	 * Returns the ComponentType based on the id in the sequence
+	 * @param x the id
+	 * @return The {@link ComponentType}
+	 */
 	public static ComponentType fromString(String x) {
 		return ComponentType.valueOf(x.toUpperCase());
 	}

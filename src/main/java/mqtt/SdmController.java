@@ -24,16 +24,34 @@ import util.SdmGrouper;
  */
 public class SdmController {
 
+	/**
+	 * The client
+	 */
 	public final MqttClient client;
 
+	/**
+	 * The queue of messages, still to be handled
+	 */
 	private List<SdmMessage> sdmMessageQ = new ArrayList<SdmMessage>();
 
+	/**
+	 * All known sensor statusses
+	 */
 	private List<Tuple<SdmTopic, byte[]>> sensorStatus = new ArrayList<Tuple<SdmTopic, byte[]>>();
 
+	/**
+	 * Time until or since the controller was or is busy
+	 */
 	private double busyTime;
 
+	/**
+	 * The default waiting time
+	 */
 	private final double waitTime = 10_000;
 
+	/**
+	 * Thread that currently running (main thread)
+	 */
 	private SdmHandler currentThread = null;
 
 	/**
@@ -41,8 +59,14 @@ public class SdmController {
 	 */
 	private final SdmTopic[] filteredTopics = { new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 3, ComponentType.SENSOR, 0) };
 
+	/**
+	 * Filtered sensors for filtering sensors based on traffic lights
+	 */
 	private final SdmTopic[] filteredSensors = { new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 3) };
 
+	/**
+	 * Constructs a new {@link SdmController}
+	 */
 	public SdmController() throws MqttException {
 		String clientId = UUID.randomUUID().toString();
 		client = new MqttClient(Constants.PROTOCOL + Constants.ADDRESS + ":" + Constants.PORT, clientId);
@@ -55,21 +79,46 @@ public class SdmController {
 		client.connect(options);
 	}
 
+	/**
+	 * Publish a topic and a message
+	 * 
+	 * @param topic   the topic
+	 * @param message the message
+	 * @throws MqttException
+	 */
 	public void publish(SdmTopic topic, byte[] message) throws MqttException {
 		SdmMessager messager = new SdmMessager(topic, message);
 		messager.run();
 		updateBusyTime();
 	}
 
+	/**
+	 * Publish a {@link SdmMessage}
+	 * 
+	 * @param sdmMessage The message
+	 * @throws MqttException
+	 */
 	public void publish(SdmMessage sdmMessage) throws MqttException {
 		publish(sdmMessage.getTopic(), sdmMessage.getMessage());
 	}
 
+	/**
+	 * Subscribes to an {@link SdmTopic}
+	 * 
+	 * @param topic    the topic
+	 * @param listener the listener interface
+	 * @throws MqttException
+	 */
 	public void subscribe(SdmTopic topic, IMqttMessageListener listener) throws MqttException {
 		SdmSubscriber subscriber = new SdmSubscriber(topic, listener);
 		subscriber.run();
 	}
 
+	/**
+	 * Queues a message onto {@link SdmMessageQ} if it meets the requirements
+	 * 
+	 * @param sdmMessage the message
+	 */
 	public void queue(SdmMessage sdmMessage) {
 		if (isFilteredTopic(sdmMessage))
 			return;
@@ -92,14 +141,11 @@ public class SdmController {
 		updateBusyTime();
 	}
 
-	public List<SdmMessage> getSdmMessageQ() {
-		return sdmMessageQ;
-	}
-
-	public List<Tuple<SdmTopic, byte[]>> getSensorStatus() {
-		return sensorStatus;
-	}
-
+	/**
+	 * Returns wether the {@link SdmController} is currently busy with something
+	 * 
+	 * @return true if busy, false if not
+	 */
 	public boolean isBusy() {
 		if (currentThread != null)
 			if (currentThread.isWorking())
@@ -107,10 +153,19 @@ public class SdmController {
 		return System.currentTimeMillis() > busyTime + waitTime;
 	}
 
+	/**
+	 * Updates the last time the controller was busy to the current time.
+	 */
 	private void updateBusyTime() {
 		busyTime = System.currentTimeMillis(); //set message to current time
 	}
 
+	/**
+	 * Polls the queue (message that was entered first) and handles it Be caucious to use preferably use
+	 * {@link handleMesage}
+	 * 
+	 * @throws MqttException
+	 */
 	public void pollQueue() throws MqttException {
 		if (currentThread == null || !currentThread.isWorking()) {
 			if (sdmMessageQ.size() > 0) {
@@ -120,6 +175,12 @@ public class SdmController {
 		}
 	}
 
+	/**
+	 * Handles a message and removes it from the queue
+	 * 
+	 * @param sdmMessage the message
+	 * @throws MqttException
+	 */
 	public void handleMessage(SdmMessage sdmMessage) throws MqttException {
 		if (currentThread == null || !currentThread.isWorking()) {
 			currentThread = new SdmHandler(this, sdmMessage);
@@ -132,6 +193,12 @@ public class SdmController {
 		}
 	}
 
+	/**
+	 * Check if a message is filtered
+	 * 
+	 * @param msg the message
+	 * @return true if the message is a filtered message (includes all topics) else false
+	 */
 	private boolean isFilteredTopic(SdmMessage msg) {
 		//this is like so because they may have different reqs in the future
 		for (SdmTopic sdmTopic : filteredTopics)
@@ -162,6 +229,14 @@ public class SdmController {
 		}
 
 		sensorStatus.add(new Tuple<SdmTopic, byte[]>(topic, message));
+	}
+
+	public List<SdmMessage> getSdmMessageQ() {
+		return sdmMessageQ;
+	}
+
+	public List<Tuple<SdmTopic, byte[]>> getSensorStatus() {
+		return sensorStatus;
 	}
 
 }

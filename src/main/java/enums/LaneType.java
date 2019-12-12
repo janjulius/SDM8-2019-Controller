@@ -41,7 +41,6 @@ public enum LaneType {
 	 */
 	private String topicName;
 	
-	
 	public String getTopicName() {
 		return topicName;
 	}
@@ -50,17 +49,35 @@ public enum LaneType {
 		return uid;
 	}
 	
+	/**
+	 * {@link LaneType} enum converted to an array of {@link LaneType}
+	 */
 	private static final LaneType[] enumValues = LaneType.values();
 	
+	/**
+	 * Returns the lanetype based on the id in the sequence
+	 * @param x the id
+	 * @return The {@link LaneType}
+	 */
 	public static LaneType fromInteger(int x) {
         return enumValues[x];
     }
 	
+	/**
+	 * Returns the lanetype based on the id in the sequence
+	 * @param x the id as string
+	 * @return The {@link LaneType}
+	 */
 	public static LaneType fromInteger(String x) {
 		int number = Integer.parseInt(x);
         return enumValues[number];
     }
 	
+	/**
+	 * Gets the lanetype based on the {@link topicName} value
+	 * @param x the string
+	 * @return The {@link LaneType}
+	 */
 	public static LaneType fromString(String x) {
 		return LaneType.valueOf(x.toUpperCase());
 	}

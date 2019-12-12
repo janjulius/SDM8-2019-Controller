@@ -17,12 +17,23 @@ import mqtt.SdmTopic;
  */
 public class SdmSensorListener implements IMqttMessageListener {
 
+	/**
+	 * The publisher
+	 */
 	private final SdmController publisher;
 
+	/**
+	 * Constructs a new {@link SdmSensorListener}
+	 */
 	public SdmSensorListener(SdmController publisher) throws MqttException {
 		this.publisher = publisher;
 	}
 
+	/**
+	 * Event when a message is received
+	 * @param topic The topic as string
+	 * @param message The message as a {@link MqttMessage}
+	 */
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		byte[] messageBytes = message.getPayload();
 		int value = Integer.parseInt(new String(messageBytes));

@@ -19,8 +19,14 @@ import mqtt.SdmTopic;
  */
 public class SdmGrouper {
 
+	/**
+	 * The publisher
+	 */
 	private static SdmController publisher;
 
+	/**
+	 * Related groups when the track is occupied
+	 */
 	private static final SdmMessage[][] trackOccupiedGroups = new SdmMessage[][] {
 			new SdmMessage[] { new SdmMessage(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.MOTORISED, 7, ComponentType.TRAFFIC_LIGHT, 0), 2),
 					new SdmMessage(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.MOTORISED, 2, ComponentType.TRAFFIC_LIGHT, 0), 2),
@@ -34,6 +40,9 @@ public class SdmGrouper {
 					new SdmMessage(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.MOTORISED, 2, ComponentType.TRAFFIC_LIGHT, 0), 2),
 					new SdmMessage(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.MOTORISED, 3, ComponentType.TRAFFIC_LIGHT, 0), 2), } };
 
+	/**
+	 * Related groups when the track is not occupied
+	 */
 	private static final SdmMessage[][] trackFreeGroups = new SdmMessage[][] { new SdmMessage[] { new SdmMessage(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.MOTORISED, 5, ComponentType.TRAFFIC_LIGHT, 0), 2),
 			new SdmMessage(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.MOTORISED, 5, ComponentType.TRAFFIC_LIGHT, 1), 2), new SdmMessage(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.MOTORISED, 6, ComponentType.TRAFFIC_LIGHT, 0), 2),
 			new SdmMessage(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.MOTORISED, 8, ComponentType.TRAFFIC_LIGHT, 0), 2), },

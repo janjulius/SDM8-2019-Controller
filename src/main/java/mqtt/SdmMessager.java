@@ -6,18 +6,24 @@ package mqtt;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 /**
- * SdmMessager Represents a SdmMessager
+ * SdmMessager Publishes messages
  * 
  * @author Lars Schipper
  * @date Oct 3, 2019
  */
 public class SdmMessager extends SdmController implements Runnable {
 
+	/**
+	 * The message
+	 */
 	private final byte[] message;
 
+	/**
+	 * The topic
+	 */
 	private final SdmTopic topic;
 
-	/*
+	/**
 	 * Constructs a new {@link SdmMessager}
 	 */
 	public SdmMessager(SdmTopic topic, byte[] message) throws MqttException {
@@ -25,7 +31,7 @@ public class SdmMessager extends SdmController implements Runnable {
 		this.message = message;
 	}
 
-	/*
+	/**
 	 * Publishes message
 	 */
 	public void run() {

@@ -7,7 +7,7 @@ import enums.ComponentType;
 import enums.LaneType;
 
 /**
- * SdmTopic Represents an SdmTopic
+ * SdmTopic Represents an topic based on the group protocol
  * 
  * @author Jan Julius de Lang
  * @author Thomas Tijsma
@@ -53,14 +53,23 @@ public class SdmTopic {
 		this.componentId = componentId;
 	}
 
+	/**
+	 * Constructs a new {@link SdmTopic}
+	 */
 	public SdmTopic(String teamId, LaneType laneType, Integer groupId, ComponentType componentType, Integer componentId) {
 		this(teamId, laneType, groupId.toString(), componentType, componentId.toString());
 	}
 
+	/**
+	 * Constructs a new {@link SdmTopic}
+	 */
 	public SdmTopic(String topic) {
 		this(getTopics(topic)[0], LaneType.fromString(getTopics(topic)[1]), getTopics(topic)[2], ComponentType.fromString(getTopics(topic)[3]), getTopics(topic)[4]);
 	}
 
+	/**
+	 * @return All traffic, boat or train lights corresponding with this sensor
+	 */
 	public SdmTopic getCorrespondingTrafficLight() {
 		if (this.laneType == LaneType.VESSEL)
 			this.componentType = ComponentType.BOAT_LIGHT;
@@ -73,6 +82,9 @@ public class SdmTopic {
 		return this;
 	}
 
+	/**
+	 * @return Returns the sensor corresponding with this traffic object
+	 */
 	public SdmTopic getCorrespondingSensors() {
 		this.componentType = ComponentType.SENSOR;
 		this.componentId = "0";

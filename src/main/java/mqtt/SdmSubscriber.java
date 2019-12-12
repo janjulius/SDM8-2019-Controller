@@ -7,18 +7,24 @@ import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 /**
- * SdmSubscriber Represents a SdmSubscriber
+ * SdmSubscriber Subscribes to a topic
  * 
  * @author Lars Schipper
  * @date Oct 3, 2019
  */
 public class SdmSubscriber extends SdmController implements Runnable {
 
+	/**
+	 * The listener
+	 */
 	private final IMqttMessageListener listener;
 
+	/**
+	 * The subscribed topic
+	 */
 	private final SdmTopic topic;
 
-	/*
+	/**
 	 * Constructs a new {@link SdmSubscriber}
 	 */
 	public SdmSubscriber(SdmTopic topic, IMqttMessageListener listener) throws MqttException {
@@ -26,7 +32,7 @@ public class SdmSubscriber extends SdmController implements Runnable {
 		this.listener = listener;
 	}
 
-	/*
+	/**
 	 * Subscribes to topic
 	 */
 	public void run() {

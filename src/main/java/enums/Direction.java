@@ -14,6 +14,9 @@ public enum Direction {
 	WEST(3, "west"),
 	;
 	
+	/**
+	 * Constructs a new {@link Direction}
+	 */
 	Direction(int uid, String topicName){
 		this.uid = uid;
 		this.topicName = topicName;
@@ -28,7 +31,6 @@ public enum Direction {
 	 * The name used to communicate with topic
 	 */
 	private String topicName;
-	
 	
 	public int getUid() {
 		return uid;
