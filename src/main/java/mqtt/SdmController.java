@@ -54,6 +54,11 @@ public class SdmController {
 	 * Thread that currently running (main thread)
 	 */
 	private SdmHandler currentThread = null;
+	
+	/**
+	 * Thread that currently runs the boat
+	 */
+	private SdmHandler boatThread = null;
 
 	/**
 	 * Filtered topics for regular traffic lights queue
@@ -142,6 +147,13 @@ public class SdmController {
 		updateBusyTime();
 	}
 
+	public void handleBoat(SdmMessage msg) {
+		if(boatThread == null || !boatThread.isWorking()) {
+			boatThread = new SdmHandler(this, msg);
+			boatThread.start();
+		}
+	}
+
 	/**
 	 * Returns wether the {@link SdmController} is currently busy with something
 	 * 
@@ -211,7 +223,7 @@ public class SdmController {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Updates a sensor status of {@linkplain topic} or adds it to the {@link sensorStatus}
 	 * 

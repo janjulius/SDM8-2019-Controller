@@ -29,7 +29,7 @@ public class Settings {
 	/**
 	 * Quality of service
 	 */
-	public static final int QOS = 1;
+	public static final int QOS = 2;
 
 	/**
 	 * Quality of service

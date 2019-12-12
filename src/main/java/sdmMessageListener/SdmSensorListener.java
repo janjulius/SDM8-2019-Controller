@@ -5,6 +5,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import enums.ComponentType;
+import enums.LaneType;
 import mqtt.SdmController;
 import mqtt.SdmMessage;
 import mqtt.SdmTopic;
@@ -43,8 +44,13 @@ public class SdmSensorListener implements IMqttMessageListener {
 
 		System.out.println("Received: " + topic + " value: " + value);
 
-		if (receivedTopic.getComponentType() == ComponentType.SENSOR)
+		if (receivedTopic.getComponentType().equals(ComponentType.SENSOR))
 			publisher.updateSensorStatus(new SdmTopic(receivedTopic.toString()), messageBytes);
+		
+		if(isBoat(topic)) {
+			publisher.handleBoat(new SdmMessage(new SdmTopic(topic), value));
+			return;
+		}
 
 		SdmTopic correspondingTrafficLightTopic = receivedTopic.getCorrespondingTrafficLight();
 		SdmMessage sdmMessage = new SdmMessage(correspondingTrafficLightTopic, message.getPayload());
@@ -54,5 +60,12 @@ public class SdmSensorListener implements IMqttMessageListener {
 			publisher.handleMessage(sdmMessage);
 
 	}
+	
+
+	private boolean isBoat(String topic) {
+		return topic.equals(new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 0).toString())
+				|| topic.equals(new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 2).toString());
+	}
+
 
 }
