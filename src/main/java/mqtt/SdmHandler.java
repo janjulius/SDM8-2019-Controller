@@ -134,7 +134,29 @@ public class SdmHandler extends Thread {
 	}
 
 	private void trainHandle() throws MqttException, InterruptedException {
+		SdmTopic trainWarningLights = new SdmTopic(LaneType.TRACK, 0, ComponentType.WARNING_LIGHT, 0);
+		publisher.publish(new SdmMessage(trainWarningLights, 1));
+		Thread.sleep(5000);
+		
+		SdmTopic trainBarriers = new SdmTopic(LaneType.TRACK, 0, ComponentType.BARRIER, 0);
+		publisher.publish(new SdmMessage(trainBarriers, 1));
+		Thread.sleep(4000);
+		
+		SdmTopic trainLight = new SdmTopic(LaneType.TRACK, 0, ComponentType.TRAIN_LIGHT, 0);
+		publisher.publish(new SdmMessage(trainLight, 1));
+		Thread.sleep(2000);
 
+		SdmTopic trainySensor = new SdmTopic(LaneType.TRACK, 0, ComponentType.SENSOR, 0);
+		while (publisher.isSensorActive(trainySensor, false)) {
+			System.out.println("Waiting for train to leave.");
+			Thread.sleep(1000);
+		}
+		Thread.sleep(2000);
+		publisher.publish(new SdmMessage(trainLight, 0));
+		Thread.sleep(3000);
+		publisher.publish(new SdmMessage(trainBarriers, 0));
+		Thread.sleep(4000);
+		publisher.publish(new SdmMessage(trainWarningLights, 0));
 	}
 
 	private void defaultHandle() throws MqttException, InterruptedException {
