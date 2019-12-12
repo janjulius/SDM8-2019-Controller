@@ -14,6 +14,7 @@ import enums.LaneType;
 import janjulius.Tuple;
 import util.Constants;
 import util.SdmGrouper;
+import util.SdmHelper;
 
 /**
  * Repersents the SdmController and handles all related things
@@ -218,6 +219,7 @@ public class SdmController {
 	 * @param message
 	 */
 	public void updateSensorStatus(SdmTopic topic, byte[] message) {
+		System.out.println("received sensor: " + topic.toString());
 		if (topic.getComponentType() != ComponentType.SENSOR)
 			return;
 
@@ -237,6 +239,38 @@ public class SdmController {
 
 	public List<Tuple<SdmTopic, byte[]>> getSensorStatus() {
 		return sensorStatus;
+	}
+	
+	/**
+	 * Gets a sensor from the {@linkplain sensorStatus} list
+	 * @param topic the topic
+	 * @return the sensor or null if it does not exist
+	 */
+	public Tuple<SdmTopic, byte[]> getSensor(SdmTopic topic){
+		System.out.println("Looking for: " + topic + " in: ");
+		for (Tuple<SdmTopic, byte[]> sensor : sensorStatus) {
+			System.out.println(sensor.getLeft().toString() + ":" + SdmHelper.bytesToInt(sensor.getRight()));
+			if(sensor.getLeft().equals(topic)) {
+				return sensor;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Check if a sensor is active
+	 * @param topic the topic
+	 * @return true if the sensor is active else false
+	 */
+	public boolean isSensorActive(SdmTopic topic, boolean isDeck) {
+		Tuple<SdmTopic, byte[]> sensor = getSensor(topic);
+		if(isDeck && sensor == null)
+			return true;
+		if(sensor == null)
+			return false;
+		if(SdmHelper.bytesToInt(sensor.getRight()) >= 1)
+			return true;
+		return false;
 	}
 
 }

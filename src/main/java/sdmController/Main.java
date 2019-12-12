@@ -3,8 +3,6 @@
  */
 package sdmController;
 
-import java.util.UUID;
-
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import enums.ComponentType;

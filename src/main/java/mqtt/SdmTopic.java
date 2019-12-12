@@ -5,6 +5,7 @@ package mqtt;
 
 import enums.ComponentType;
 import enums.LaneType;
+import util.Constants;
 
 /**
  * SdmTopic Represents an topic based on the group protocol
@@ -58,6 +59,20 @@ public class SdmTopic {
 	 */
 	public SdmTopic(String teamId, LaneType laneType, Integer groupId, ComponentType componentType, Integer componentId) {
 		this(teamId, laneType, groupId.toString(), componentType, componentId.toString());
+	}
+	
+	/**
+	 * Constructs a new {@link SdmTopic}
+	 */
+	public SdmTopic(LaneType laneType, Integer groupId, ComponentType componentType, Integer componentId) {
+		this(Constants.CONNECTED_TEAM, laneType, groupId.toString(), componentType, componentId.toString());
+	}
+	
+	/**
+	 * Constructs a new {@link SdmTopic}
+	 */
+	public SdmTopic(LaneType laneType, String groupId, ComponentType componentType, String componentId) {
+		this(Constants.CONNECTED_TEAM, laneType, groupId, componentType, componentId);
 	}
 
 	/**
@@ -133,7 +148,7 @@ public class SdmTopic {
 //		System.out.println(groupId.equals(topic.groupId));
 //		System.out.println(componentType.equals(topic.componentType));
 //		System.out.println(componentId.equals(topic.componentId));
-		return teamId.equals(topic.teamId) && laneType.equals(topic.laneType) && groupId.equals(topic.groupId) && componentType.equals(topic.componentType) && componentId.equals(topic.componentId);
+		return laneType.equals(topic.laneType) && groupId.equals(topic.groupId) && componentType.equals(topic.componentType) && componentId.equals(topic.componentId);
 
 	}
 

@@ -3,9 +3,14 @@
  */
 package mqtt;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Handler;
+
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import enums.ComponentType;
+import enums.LaneType;
 import util.Constants;
 import util.SdmHelper;
 
@@ -40,59 +45,123 @@ public class SdmHandler extends Thread {
 		message = msg;
 	}
 
+	/**
+	 * The boat topics
+	 */
+	public List<SdmTopic> boatTopics = Arrays.asList(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 0), new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 2));
+
 	@Override
 	public void run() {
 		working = true;
 
 		try {
-
-			if (message.getTopic().getComponentType() == ComponentType.TRAFFIC_LIGHT)
-				message.setMessage(SdmHelper.intToBytes(2));
+			if (message.getTopic().getComponentType().equals(ComponentType.BOAT_LIGHT))
+				boatHandle();
+			else if (message.getTopic().getComponentType().equals(ComponentType.TRAIN_LIGHT))
+				trainHandle();
 			else
-				message.setMessage(SdmHelper.intToBytes(1));
-
-			publisher.publish(message);
-			Thread.sleep(Constants.DEFAULT_GREEN_TIME);
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-
-		System.out.println(message);
-		if (message.getTopic().getComponentType() == ComponentType.TRAFFIC_LIGHT) { //if traffic light set to orange
-			try {
-				Thread.sleep(1_000);
-				message.setMessage(SdmHelper.intToBytes(1));
-				publisher.publish(message);
-			} catch (Exception e) {
-			}
-		}
-
-		try { //set back to 0
-			Thread.sleep(1_000);
-			message.setMessage(SdmHelper.intToBytes(0));
-			publisher.publish(message);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+				defaultHandle();
 		} catch (MqttException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-		try {
-			Thread.sleep(Constants.DEFAULT_CLEAR_TIME);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+		working = false;
+
 		try {
-			System.out.println("removing: " + message.getTopic());
-			for (SdmMessage asdf : publisher.getSdmMessageQ()) {
-				System.out.println("Msg:" + asdf);
-			}
-			working = false;
 			publisher.pollQueue();
 		} catch (MqttException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	private void boatHandle() throws MqttException, InterruptedException {
+		//warning_lights -> deck leeg -> barriers dicht -> deck open -> boat_light op groen
+
+		//warning lights aan
+		SdmTopic deckWarningLightsTopic = new SdmTopic(LaneType.VESSEL, 0, ComponentType.WARNING_LIGHT, 0);
+		publisher.publish(new SdmMessage(deckWarningLightsTopic, 1));
+
+		//check if deck is empty
+		SdmTopic deckStatusTopic = new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 3);
+
+		while (!publisher.isSensorActive(deckStatusTopic, true)) {
+			Thread.sleep(1000);
+		}
+		Thread.sleep(500);
+
+		//close barriers
+		SdmTopic deckBarriersTopic = new SdmTopic(LaneType.VESSEL, 0, ComponentType.BARRIER, 0);
+
+		publisher.publish(new SdmMessage(deckBarriersTopic, 1));
+
+		Thread.sleep(4000);
+
+		SdmTopic deckTopic = new SdmTopic(LaneType.VESSEL, 0, ComponentType.DECK, 0);
+		publisher.publish(new SdmMessage(deckTopic, 1));
+
+		Thread.sleep(10_000);
+
+		SdmTopic[] boatLightTopics = new SdmTopic[] { new SdmTopic(LaneType.VESSEL, 0, ComponentType.BOAT_LIGHT, 0), new SdmTopic(LaneType.VESSEL, 0, ComponentType.BOAT_LIGHT, 1) };
+		for (SdmTopic sdmTopic : boatLightTopics) {
+			publisher.publish(new SdmMessage(sdmTopic, 1));
+			Thread.sleep(200);
+		}
+		Thread.sleep(2000);
+		SdmTopic boatySensor = new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 1);
+		while (publisher.isSensorActive(boatySensor, false)) {
+//			if(publisher.getSensor(boatySensor) != null)
+//				System.out.println(SdmHelper.bytesToInt(publisher.getSensor(boatySensor).getRight()));
+			System.out.println("Waiting for boats to pass." + publisher.isSensorActive(boatySensor, false));
+			Thread.sleep(2000);
+		}
+		Thread.sleep(500);
+
+		for (SdmTopic sdmTopic : boatLightTopics) {
+			publisher.publish(new SdmMessage(sdmTopic, 0));
+		}
+		publisher.publish(new SdmMessage(deckTopic, 0));
+		Thread.sleep(10_000);
+
+		publisher.publish(new SdmMessage(deckBarriersTopic, 0));
+		Thread.sleep(4000);
+
+		publisher.publish(new SdmMessage(deckWarningLightsTopic, 0));
+	}
+
+	private void trainHandle() throws MqttException, InterruptedException {
+
+	}
+
+	private void defaultHandle() throws MqttException, InterruptedException {
+
+		if (message.getTopic().getComponentType() == ComponentType.TRAFFIC_LIGHT)
+			message.setMessage(SdmHelper.intToBytes(2));
+		else
+			message.setMessage(SdmHelper.intToBytes(1));
+
+		publisher.publish(message);
+		Thread.sleep(Constants.DEFAULT_GREEN_TIME);
+
+		if (message.getTopic().getComponentType() == ComponentType.TRAFFIC_LIGHT) { //if traffic light set to orange
+			Thread.sleep(1_000);
+			message.setMessage(SdmHelper.intToBytes(1));
+			publisher.publish(message);
+		}
+
+		Thread.sleep(1_000);
+		message.setMessage(SdmHelper.intToBytes(0));
+		publisher.publish(message);
+
+		Thread.sleep(Constants.DEFAULT_CLEAR_TIME);
+
+		System.out.println("removing: " + message.getTopic());
+		for (SdmMessage asdf : publisher.getSdmMessageQ()) {
+			System.out.println("Msg:" + asdf);
 		}
 	}
 
