@@ -15,6 +15,7 @@ import enums.ComponentType;
 import enums.LaneType;
 import janjulius.Tuple;
 import util.Constants;
+import util.SdmGrouper;
 
 /**
  * Repersents the SdmController and handles all related things
@@ -35,11 +36,13 @@ public class SdmController {
 
 	private final double waitTime = 10_000;
 
+	private SdmHandler currentThread = null;
+
 	/**
 	 * Filtered topics for regular traffic lights queue
 	 */
-	private final String[] filteredTopics = { "8/vessel/3/sensor/0" };
-	
+	private final SdmTopic[] filteredTopics = { new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 3, ComponentType.SENSOR, 0) };
+
 	private final SdmTopic[] filteredSensors = { new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 3) };
 
 	public SdmController() throws MqttException {
@@ -81,7 +84,6 @@ public class SdmController {
 						return;
 					if (qmsg.getTopic().equals(sdmMessage.getTopic()))
 						return;
-					System.out.println("ADDED TO QUEUE");
 					sdmMessageQ.add(sdmMessage);
 					break;
 				}
@@ -105,6 +107,9 @@ public class SdmController {
 	}
 
 	public boolean isBusy() {
+		if (currentThread != null)
+			if (currentThread.isWorking())
+				return true;
 		return System.currentTimeMillis() > busyTime + waitTime;
 	}
 
@@ -113,21 +118,29 @@ public class SdmController {
 	}
 
 	public void pollQueue() throws MqttException {
-		SdmMessage msg = sdmMessageQ.poll();
-		handleMessage(msg);
+		if (currentThread == null || !currentThread.isWorking()) {
+			SdmMessage msg = sdmMessageQ.poll();
+			handleMessage(msg);
+		}
 	}
 
 	public void handleMessage(SdmMessage sdmMessage) throws MqttException {
-		SdmHandler handlerhomie = new SdmHandler(this, sdmMessage);
-		handlerhomie.start();
+		if (currentThread == null || !currentThread.isWorking()) {
+			currentThread = new SdmHandler(this, sdmMessage);
+			currentThread.start();
+			for (SdmMessage msg : SdmGrouper.getRelatedGroups(sdmMessage.getTopic(), this)) {
+				new SdmHandler(this, msg).start();
+			}
+		}
 	}
 
 	private boolean isFilteredTopic(SdmMessage msg) {
-		for (String string : filteredTopics)
-			if (msg.getTopic().toString().equals(string))
+		//this is like so because they may have different reqs in the future
+		for (SdmTopic sdmTopic : filteredTopics)
+			if (sdmTopic.equals(msg.getTopic()))
 				return true;
 		for (SdmTopic sdmTopic : filteredSensors) {
-			if(sdmTopic.equals(msg.getTopic()))
+			if (sdmTopic.equals(msg.getTopic()))
 				return true;
 		}
 		return false;
