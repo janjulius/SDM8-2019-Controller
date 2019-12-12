@@ -1,9 +1,7 @@
 package mqtt;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.UUID;
 
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -28,7 +26,7 @@ public class SdmController {
 
 	public final MqttClient client;
 
-	private Queue<SdmMessage> sdmMessageQ = new LinkedList<SdmMessage>();
+	private List<SdmMessage> sdmMessageQ = new ArrayList<SdmMessage>();
 
 	private List<Tuple<SdmTopic, byte[]>> sensorStatus = new ArrayList<Tuple<SdmTopic, byte[]>>();
 
@@ -94,16 +92,12 @@ public class SdmController {
 		updateBusyTime();
 	}
 
-	public Queue<SdmMessage> getSdmMessageQ() {
+	public List<SdmMessage> getSdmMessageQ() {
 		return sdmMessageQ;
 	}
 
 	public List<Tuple<SdmTopic, byte[]>> getSensorStatus() {
 		return sensorStatus;
-	}
-
-	public void setSdmMessageQ(Queue<SdmMessage> sdmMessageQ) {
-		this.sdmMessageQ = sdmMessageQ;
 	}
 
 	public boolean isBusy() {
@@ -119,8 +113,10 @@ public class SdmController {
 
 	public void pollQueue() throws MqttException {
 		if (currentThread == null || !currentThread.isWorking()) {
-			SdmMessage msg = sdmMessageQ.poll();
-			handleMessage(msg);
+			if (sdmMessageQ.size() > 0) {
+				SdmMessage msg = sdmMessageQ.get(0);
+				handleMessage(msg);
+			}
 		}
 	}
 
@@ -128,8 +124,10 @@ public class SdmController {
 		if (currentThread == null || !currentThread.isWorking()) {
 			currentThread = new SdmHandler(this, sdmMessage);
 			currentThread.start();
+			sdmMessageQ.remove(sdmMessage);
 			for (SdmMessage msg : SdmGrouper.getRelatedGroups(sdmMessage.getTopic(), this)) {
 				new SdmHandler(this, msg).start();
+				sdmMessageQ.remove(msg);
 			}
 		}
 	}

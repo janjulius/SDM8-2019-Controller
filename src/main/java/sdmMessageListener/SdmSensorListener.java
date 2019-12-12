@@ -39,7 +39,7 @@ public class SdmSensorListener implements IMqttMessageListener {
 			SdmMessage sdmMessage = new SdmMessage(correspondingTrafficLightTopic, message.getPayload());
 			publisher.queue(sdmMessage);
 
-			if (publisher.getSdmMessageQ().peek() == sdmMessage)
+			if (publisher.getSdmMessageQ().get(0) == sdmMessage)
 				publisher.handleMessage(sdmMessage);
 		}
 	}
