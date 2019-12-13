@@ -59,6 +59,7 @@ public class SdmSensorListener implements IMqttMessageListener {
 		
 		if(isBoat(receivedTopic.toString())) {
 			publisher.handleBoat(new SdmMessage(new SdmTopic(topic), value));
+			return;
 		}
 		
 		if (isFilteredTopic(receivedTopic))

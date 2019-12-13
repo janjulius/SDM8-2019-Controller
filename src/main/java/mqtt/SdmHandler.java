@@ -52,12 +52,13 @@ public class SdmHandler extends Thread {
 
 	@Override
 	public void run() {
+		synchronized(this) {
 		working = true;
 
 		try {
-			if (message.getTopic().getComponentType().equals(ComponentType.BOAT_LIGHT))
+			if (message.getTopic().getLaneType().equals(LaneType.VESSEL))
 				boatHandle();
-			else if (message.getTopic().getComponentType().equals(ComponentType.TRAIN_LIGHT))
+			else if (message.getTopic().getLaneType().equals(LaneType.TRACK))
 				trainHandle();
 			else
 				defaultHandle();
@@ -76,6 +77,7 @@ public class SdmHandler extends Thread {
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
 		}
 	}
 
@@ -186,4 +188,8 @@ public class SdmHandler extends Thread {
 		return working;
 	}
 
+	
+	public SdmMessage getMessage() {
+		return message;
+	}
 }
