@@ -177,10 +177,6 @@ public class SdmController {
 	 * @throws MqttException
 	 */
 	public void pollQueue() throws MqttException {
-		System.out.println("polling " + currentThread.getMessage() + " " + boatThread.getMessage());
-		if(currentThread != null) {
-			System.out.println("CUR IS NOT NULL: " + currentThread.isWorking());
-		}
 		if (currentThread == null || !currentThread.isWorking()) {
 			if (sdmMessageQ.size() > 0) {
 				SdmMessage msg = sdmMessageQ.get(0);
