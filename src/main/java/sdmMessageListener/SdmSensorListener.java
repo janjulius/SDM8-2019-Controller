@@ -57,6 +57,10 @@ public class SdmSensorListener implements IMqttMessageListener {
 		if (receivedTopic.getComponentType().equals(ComponentType.SENSOR))
 			publisher.updateSensorStatus(new SdmTopic(receivedTopic.toString()), messageBytes);
 		
+		if(isBoat(receivedTopic.toString())) {
+			publisher.handleBoat(new SdmMessage(new SdmTopic(topic), value));
+		}
+		
 		if (isFilteredTopic(receivedTopic))
 			return;
 
