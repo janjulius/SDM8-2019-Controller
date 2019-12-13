@@ -9,6 +9,7 @@ import enums.LaneType;
 import mqtt.SdmController;
 import mqtt.SdmMessage;
 import mqtt.SdmTopic;
+import util.Constants;
 
 /**
  * Represents Mqtt Message Listener
@@ -22,6 +23,15 @@ public class SdmSensorListener implements IMqttMessageListener {
 	 * The publisher
 	 */
 	private final SdmController publisher;
+
+	/**
+	 * Filtered topics for regular traffic lights queue
+	 */
+	private final SdmTopic[] filteredTopics = {
+			new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 1),
+			new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 3),
+			new SdmTopic(Constants.CONNECTED_TEAM, LaneType.TRACK, 0, ComponentType.SENSOR, 1) 
+			};
 
 	/**
 	 * Constructs a new {@link SdmSensorListener}
@@ -47,10 +57,8 @@ public class SdmSensorListener implements IMqttMessageListener {
 		if (receivedTopic.getComponentType().equals(ComponentType.SENSOR))
 			publisher.updateSensorStatus(new SdmTopic(receivedTopic.toString()), messageBytes);
 		
-		if(isBoat(topic)) {
-			publisher.handleBoat(new SdmMessage(new SdmTopic(topic), value));
+		if (isFilteredTopic(receivedTopic))
 			return;
-		}
 
 		SdmTopic correspondingTrafficLightTopic = receivedTopic.getCorrespondingTrafficLight();
 		SdmMessage sdmMessage = new SdmMessage(correspondingTrafficLightTopic, message.getPayload());
@@ -65,6 +73,21 @@ public class SdmSensorListener implements IMqttMessageListener {
 	private boolean isBoat(String topic) {
 		return topic.equals(new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 0).toString())
 				|| topic.equals(new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 2).toString());
+	}
+	
+	/**
+	 * Check if a message is filtered
+	 * 
+	 * @param msg the message
+	 * @return true if the message is a filtered message (includes all topics) else
+	 *         false
+	 */
+	private boolean isFilteredTopic(SdmTopic topic) {
+		// this is like so because they may have different reqs in the future
+		for (SdmTopic sdmTopic : filteredTopics)
+			if (sdmTopic.equals(topic))
+				return true;
+		return false;
 	}
 
 

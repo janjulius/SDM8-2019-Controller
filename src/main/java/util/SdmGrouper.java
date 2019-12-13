@@ -86,7 +86,6 @@ public class SdmGrouper {
 	public static List<SdmMessage> getRelatedGroups(SdmTopic topic, SdmController p) {
 		publisher = p;
 		List<SdmMessage> result = getMessages(topic);
-		System.out.println("getRelatedGroups results: ");
 		for (SdmMessage sdmMessage : result) {
 			System.out.println(sdmMessage.toString());
 		}
@@ -139,8 +138,6 @@ public class SdmGrouper {
 				weight = curWeight;
 			}
 		}
-		if (result != null)
-			System.out.println("Busiest group size is: " + result.size());
 		return result;
 	}
 
@@ -151,7 +148,6 @@ public class SdmGrouper {
 	 * @return message array of which to send on new threads
 	 */
 	private static List<SdmMessage> getMessages(SdmTopic topic) {
-		System.out.println("getting messages");
 		List<SdmMessage> result = new ArrayList<SdmMessage>();
 
 		String teamId = Constants.CONNECTED_TEAM;
@@ -177,8 +173,6 @@ public class SdmGrouper {
 				}
 			}
 		}
-
-		System.out.println("getMessages method resulted in an array of size: " + result.size());
 		return result;
 	}
 

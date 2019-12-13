@@ -38,7 +38,7 @@ public class SdmLogger {
 	 */
 	public static void Log(String objName, Object message) {
 		text.add("[" + objName + "] " + message);
-		System.out.println(text.get(text.size() - 1));
+		//System.out.println(text.get(text.size() - 1));
 	}
 
 	/**

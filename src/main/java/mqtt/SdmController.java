@@ -54,21 +54,12 @@ public class SdmController {
 	 * Thread that currently running (main thread)
 	 */
 	private SdmHandler currentThread = null;
-	
+
 	/**
 	 * Thread that currently runs the boat
 	 */
 	private SdmHandler boatThread = null;
 
-	/**
-	 * Filtered topics for regular traffic lights queue
-	 */
-	private final SdmTopic[] filteredTopics = { new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 3, ComponentType.SENSOR, 0) };
-
-	/**
-	 * Filtered sensors for filtering sensors based on traffic lights
-	 */
-	private final SdmTopic[] filteredSensors = { new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 3) };
 
 	/**
 	 * Constructs a new {@link SdmController}
@@ -126,9 +117,10 @@ public class SdmController {
 	 * @param sdmMessage the message
 	 */
 	public void queue(SdmMessage sdmMessage) {
-		if (isFilteredTopic(sdmMessage))
-			return;
-		if (sdmMessageQ.isEmpty()) {
+		if (isTrain(sdmMessage.getTopic())) {
+			sdmMessageQ.add(0, sdmMessage);
+		}
+		else if (sdmMessageQ.isEmpty()) {
 			sdmMessageQ.add(sdmMessage);
 		} else {
 			try {
@@ -147,10 +139,14 @@ public class SdmController {
 		updateBusyTime();
 	}
 
+	private boolean isTrain(SdmTopic topic) {
+		return topic.equals(new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 0)) ;
+	}
+	
 	public void handleBoat(SdmMessage msg) {
-		if(boatThread == null || !boatThread.isWorking()) {
+		if (boatThread == null || !boatThread.isWorking()) {
 			boatThread = new SdmHandler(this, msg);
-			boatThread.start();
+			new Thread(boatThread).start();
 		}
 	}
 
@@ -170,12 +166,12 @@ public class SdmController {
 	 * Updates the last time the controller was busy to the current time.
 	 */
 	private void updateBusyTime() {
-		busyTime = System.currentTimeMillis(); //set message to current time
+		busyTime = System.currentTimeMillis(); // set message to current time
 	}
 
 	/**
-	 * Polls the queue (message that was entered first) and handles it Be caucious to use preferably use
-	 * {@link handleMesage}
+	 * Polls the queue (message that was entered first) and handles it Be caucious
+	 * to use preferably use {@link handleMesage}
 	 * 
 	 * @throws MqttException
 	 */
@@ -197,41 +193,33 @@ public class SdmController {
 	public void handleMessage(SdmMessage sdmMessage) throws MqttException {
 		if (currentThread == null || !currentThread.isWorking()) {
 			currentThread = new SdmHandler(this, sdmMessage);
-			currentThread.start();
+			new Thread(currentThread).start();
 			sdmMessageQ.remove(sdmMessage);
 			for (SdmMessage msg : SdmGrouper.getRelatedGroups(sdmMessage.getTopic(), this)) {
-				new SdmHandler(this, msg).start();
-				sdmMessageQ.remove(msg);
+				new Thread(new SdmHandler(this, msg)).start();
+				SdmMessage toRemove = null;
+				for(SdmMessage item : sdmMessageQ) {
+					if(item.getTopic().equals(msg.getTopic())) {
+						toRemove = item;
+						break;
+					}
+				}
+				if(toRemove != null) 
+				{				
+					sdmMessageQ.remove(toRemove);
+				}
 			}
 		}
 	}
 
 	/**
-	 * Check if a message is filtered
-	 * 
-	 * @param msg the message
-	 * @return true if the message is a filtered message (includes all topics) else false
-	 */
-	private boolean isFilteredTopic(SdmMessage msg) {
-		//this is like so because they may have different reqs in the future
-		for (SdmTopic sdmTopic : filteredTopics)
-			if (sdmTopic.equals(msg.getTopic()))
-				return true;
-		for (SdmTopic sdmTopic : filteredSensors) {
-			if (sdmTopic.equals(msg.getTopic()))
-				return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Updates a sensor status of {@linkplain topic} or adds it to the {@link sensorStatus}
+	 * Updates a sensor status of {@linkplain topic} or adds it to the
+	 * {@link sensorStatus}
 	 * 
 	 * @param topic
 	 * @param message
 	 */
 	public void updateSensorStatus(SdmTopic topic, byte[] message) {
-		System.out.println("received sensor: " + topic.toString());
 		if (topic.getComponentType() != ComponentType.SENSOR)
 			return;
 
@@ -252,35 +240,35 @@ public class SdmController {
 	public List<Tuple<SdmTopic, byte[]>> getSensorStatus() {
 		return sensorStatus;
 	}
-	
+
 	/**
 	 * Gets a sensor from the {@linkplain sensorStatus} list
+	 * 
 	 * @param topic the topic
 	 * @return the sensor or null if it does not exist
 	 */
-	public Tuple<SdmTopic, byte[]> getSensor(SdmTopic topic){
-		System.out.println("Looking for: " + topic + " in: ");
+	public Tuple<SdmTopic, byte[]> getSensor(SdmTopic topic) {
 		for (Tuple<SdmTopic, byte[]> sensor : sensorStatus) {
-			System.out.println(sensor.getLeft().toString() + ":" + SdmHelper.bytesToInt(sensor.getRight()));
-			if(sensor.getLeft().equals(topic)) {
+			if (sensor.getLeft().equals(topic)) {
 				return sensor;
 			}
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Check if a sensor is active
+	 * 
 	 * @param topic the topic
 	 * @return true if the sensor is active else false
 	 */
 	public boolean isSensorActive(SdmTopic topic, boolean isDeck) {
 		Tuple<SdmTopic, byte[]> sensor = getSensor(topic);
-		if(isDeck && sensor == null)
+		if (isDeck && sensor == null)
 			return true;
-		if(sensor == null)
+		if (sensor == null)
 			return false;
-		if(SdmHelper.bytesToInt(sensor.getRight()) >= 1)
+		if (SdmHelper.bytesToInt(sensor.getRight()) >= 1)
 			return true;
 		return false;
 	}

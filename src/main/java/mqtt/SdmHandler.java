@@ -180,11 +180,6 @@ public class SdmHandler extends Thread {
 		publisher.publish(message);
 
 		Thread.sleep(Constants.DEFAULT_CLEAR_TIME);
-
-		System.out.println("removing: " + message.getTopic());
-		for (SdmMessage asdf : publisher.getSdmMessageQ()) {
-			System.out.println("Msg:" + asdf);
-		}
 	}
 
 	public boolean isWorking() {
