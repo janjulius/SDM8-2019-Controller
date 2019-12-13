@@ -48,47 +48,50 @@ public class SdmHandler extends Thread {
 	/**
 	 * The boat topics
 	 */
-	public List<SdmTopic> boatTopics = Arrays.asList(new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 0), new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 2));
+	public List<SdmTopic> boatTopics = Arrays.asList(
+			new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 0),
+			new SdmTopic(Constants.CONNECTED_TEAM, LaneType.VESSEL, 0, ComponentType.SENSOR, 2));
 
 	@Override
 	public void run() {
-		synchronized(this) {
-		working = true;
+		synchronized (this) {
+			working = true;
 
-		try {
-			if (message.getTopic().getLaneType().equals(LaneType.VESSEL))
-				boatHandle();
-			else if (message.getTopic().getLaneType().equals(LaneType.TRACK))
-				trainHandle();
-			else
-				defaultHandle();
-		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			try {
+				if (message.getTopic().getLaneType().equals(LaneType.VESSEL))
+					boatHandle();
+				else if (message.getTopic().getLaneType().equals(LaneType.TRACK))
+					trainHandle();
+				else
+					defaultHandle();
+			} catch (MqttException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		working = false;
+			working = false;
 
-		try {
-			publisher.pollQueue();
-		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			try {
+				publisher.pollQueue();
+			} catch (MqttException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
 	private void boatHandle() throws MqttException, InterruptedException {
-		//warning_lights -> deck leeg -> barriers dicht -> deck open -> boat_light op groen
+		// warning_lights -> deck leeg -> barriers dicht -> deck open -> boat_light op
+		// groen
 
-		//warning lights aan
+		// warning lights aan
 		SdmTopic deckWarningLightsTopic = new SdmTopic(LaneType.VESSEL, 0, ComponentType.WARNING_LIGHT, 0);
 		publisher.publish(new SdmMessage(deckWarningLightsTopic, 1));
 
-		//check if deck is empty
+		// check if deck is empty
 		SdmTopic deckStatusTopic = new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 3);
 
 		while (!publisher.isSensorActive(deckStatusTopic, true)) {
@@ -96,7 +99,7 @@ public class SdmHandler extends Thread {
 		}
 		Thread.sleep(500);
 
-		//close barriers
+		// close barriers
 		SdmTopic deckBarriersTopic = new SdmTopic(LaneType.VESSEL, 0, ComponentType.BARRIER, 0);
 
 		publisher.publish(new SdmMessage(deckBarriersTopic, 1));
@@ -108,12 +111,17 @@ public class SdmHandler extends Thread {
 
 		Thread.sleep(10_000);
 
-		SdmTopic[] boatLightTopics = new SdmTopic[] { new SdmTopic(LaneType.VESSEL, 0, ComponentType.BOAT_LIGHT, 0), new SdmTopic(LaneType.VESSEL, 0, ComponentType.BOAT_LIGHT, 1) };
+		SdmTopic[] boatLightTopics = new SdmTopic[] { new SdmTopic(LaneType.VESSEL, 0, ComponentType.BOAT_LIGHT, 0),
+				new SdmTopic(LaneType.VESSEL, 0, ComponentType.BOAT_LIGHT, 1) };
 		for (SdmTopic sdmTopic : boatLightTopics) {
 			publisher.publish(new SdmMessage(sdmTopic, 1));
-			Thread.sleep(200);
+			Thread.sleep(20);
 		}
-		Thread.sleep(2000);
+		Thread.sleep(15000);
+		for (SdmTopic sdmTopic : boatLightTopics) {
+			publisher.publish(new SdmMessage(sdmTopic, 0));
+			Thread.sleep(20);
+		}
 		SdmTopic boatySensor = new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 1);
 		while (publisher.isSensorActive(boatySensor, false)) {
 //			if(publisher.getSensor(boatySensor) != null)
@@ -123,9 +131,6 @@ public class SdmHandler extends Thread {
 		}
 		Thread.sleep(500);
 
-		for (SdmTopic sdmTopic : boatLightTopics) {
-			publisher.publish(new SdmMessage(sdmTopic, 0));
-		}
 		publisher.publish(new SdmMessage(deckTopic, 0));
 		Thread.sleep(10_000);
 
@@ -139,11 +144,11 @@ public class SdmHandler extends Thread {
 		SdmTopic trainWarningLights = new SdmTopic(LaneType.TRACK, 0, ComponentType.WARNING_LIGHT, 0);
 		publisher.publish(new SdmMessage(trainWarningLights, 1));
 		Thread.sleep(5000);
-		
+
 		SdmTopic trainBarriers = new SdmTopic(LaneType.TRACK, 0, ComponentType.BARRIER, 0);
 		publisher.publish(new SdmMessage(trainBarriers, 1));
 		Thread.sleep(4000);
-		
+
 		SdmTopic trainLight = new SdmTopic(LaneType.TRACK, 0, ComponentType.TRAIN_LIGHT, 0);
 		publisher.publish(new SdmMessage(trainLight, 1));
 		Thread.sleep(2000);
@@ -171,7 +176,7 @@ public class SdmHandler extends Thread {
 		publisher.publish(message);
 		Thread.sleep(Constants.DEFAULT_GREEN_TIME);
 
-		if (message.getTopic().getComponentType() == ComponentType.TRAFFIC_LIGHT) { //if traffic light set to orange
+		if (message.getTopic().getComponentType() == ComponentType.TRAFFIC_LIGHT) { // if traffic light set to orange
 			Thread.sleep(1_000);
 			message.setMessage(SdmHelper.intToBytes(1));
 			publisher.publish(message);
@@ -188,7 +193,6 @@ public class SdmHandler extends Thread {
 		return working;
 	}
 
-	
 	public SdmMessage getMessage() {
 		return message;
 	}

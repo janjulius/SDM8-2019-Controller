@@ -117,7 +117,7 @@ public class SdmController {
 	 * @param sdmMessage the message
 	 */
 	public void queue(SdmMessage sdmMessage) {
-		if (isTrain(sdmMessage.getTopic())) {
+		if (isTrain(new SdmTopic(sdmMessage.getTopic().toString()).getCorrespondingSensors())) {
 			sdmMessageQ.add(0, sdmMessage);
 		}
 		else if (sdmMessageQ.isEmpty()) {
@@ -141,7 +141,7 @@ public class SdmController {
 	}
 
 	private boolean isTrain(SdmTopic topic) {
-		return topic.equals(new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 0)) ;
+		return topic.toString().equals(new SdmTopic(LaneType.TRACK, 0, ComponentType.SENSOR, 0).toString()) ;
 	}
 	
 	public void handleBoat(SdmMessage msg) {
