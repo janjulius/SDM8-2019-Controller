@@ -94,7 +94,7 @@ public class SdmHandler extends Thread {
 		// check if deck is empty
 		SdmTopic deckStatusTopic = new SdmTopic(LaneType.VESSEL, 0, ComponentType.SENSOR, 3);
 
-		while (!publisher.isSensorActive(deckStatusTopic, true)) {
+		while (publisher.isSensorActive(deckStatusTopic, true)) {
 			Thread.sleep(1000);
 		}
 		Thread.sleep(500);
